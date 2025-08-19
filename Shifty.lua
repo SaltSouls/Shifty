@@ -60,8 +60,8 @@ local function getColor(fg, color)
     else newColor.alpha = getData("bgAlpha") end
     return newColor
 end
----[Set Single Color]--------------
-local function setColor(color)
+---[Creates a Display Color]-------
+local function displayColor(color)
     local newColor = Color(color)
     newColor.alpha = 255
     return newColor
@@ -69,7 +69,7 @@ end
 ---[Get All Colors]----------------
 local function getPaletteColors(id) return colorPalettes[id] end
 ---[Set Color at Index]------------
-local function setPaletteColor(id, index, color) colorPalettes[id][index] = setColor(color) end
+local function setPaletteColor(id, index, color) colorPalettes[id][index] = displayColor(color) end
 -----------------------------------
 
 -----------------------------------
@@ -195,7 +195,7 @@ end
 local function updateDialogData()
     if not dlg then return end
     --- Base Colors:
-    dlg:modify{ id = "base", colors = { setColor(getData("fgColor")), setColor(getData("bgColor")) } }
+    dlg:modify{ id = "base", colors = { displayColor(getData("fgColor")), displayColor(getData("bgColor")) } }
 
     --- Tab 1:
     dlg:modify{ id = "shade", colors = getPaletteColors("shade") }
@@ -263,12 +263,12 @@ local function getTempValues(color)
 end
 
 ---[Update single Color]-----------
-local function updateColor(id, color, baseColor)
+local function updateColor(id, color)
     local fg = true
     if id == "bgColor" then fg = false end
 
-    setData(id, setColor(color))
-    app[id] = getColor(fg, baseColor)
+    setData(id, color)
+    app[id] = getColor(fg, color)
 end
 ---[Update All Color Palettes]-----
 local function updateColors(color)
@@ -309,18 +309,16 @@ local function onFBGChange(fg)
             local color = Color()
             if fg then
                 color = app.fgColor
-                setData("fgColor", setColor(color))
+                setData("fgColor", color)
                 setData("fgAlpha", color.alpha)
-                print("Updated `lastColor` to `fgColor`: onFBGChange")
 
             else
                 color = app.bgColor
-                setData("bgColor", setColor(color))
+                setData("bgColor", color)
                 setData("bgAlpha", color.alpha)
-                print("Updated `lastColor` to `bgColor`: onFBGChange")
             end
-            setData("lastColor", setColor(color))
-            updateColors(setColor(color))
+            setData("lastColor", color)
+            updateColors(color)
         end
 
         --- Capture the current alpha value
@@ -332,28 +330,20 @@ end
 
 local function onShadesClick(ev)
     setValue("eyeDropper", false)
+    local color = ev.color
     local action = ev.button
     local leftClick = MouseButton.LEFT
     local rightClick = MouseButton.RIGHT
     local middleClick = MouseButton.MIDDLE
-    local displayColor = setColor(ev.color)
 
-    if (action == leftClick) then
-        print("Updated `lastColor` to `fgColor`: onShadesClick")
-        updateColor("fgColor", displayColor, ev.color)
+    if (action == leftClick) then updateColor("fgColor", color)
     elseif (action == middleClick) then
-        if getData("fgColor") == getData("lastColor") then
-            print("Updated `lastColor` to `fgColor`: onShadesClick")
-            updateColor("fgColor", displayColor, ev.color)
-        else
-            print("Updated `lastColor` to `bgColor`: onShadesClick")
-            updateColor("bgColor", displayColor, ev.color)
-        end
-        setData("lastColor", displayColor)
-        updateColors(displayColor)
-    elseif (action == rightClick) then
-        print("Updated `lastColor` to `bgColor`: onShadesClick")
-        updateColor("bgColor", displayColor, ev.color)
+        if getData("fgColor") == getData("lastColor") then updateColor("fgColor", color)
+        else updateColor("bgColor", color) end
+
+        setData("lastColor", color)
+        updateColors(color)
+    elseif (action == rightClick) then updateColor("bgColor", color)
     end
 end
 
@@ -455,21 +445,22 @@ end
 local function createDialog()
     dlg = Dialog{ title = "Shifty", onclose = disableListeners }
     dlg :separator("Base Colors:")
-        :shades{ id = "base", colors = { setColor(getData("fgColor")), setColor(getData("bgColor")) },
+        :shades{ id = "base", colors = { displayColor(getData("fgColor")), displayColor(getData("bgColor")) },
             onclick = function(ev)
-                print("Updated `lastColor` to `Selected Color`: Base Colors")
-                setData("lastColor", setColor(ev.color))
-                updateColors(setColor(ev.color))
+                setData("lastColor", ev.color)
+                updateColors(ev.color)
             end
         }
         :button{ id = "get", text = "Get", onclick = function()
+                setData("fgColor", app.fgColor)
+                setData("bgColor", app.bgColor)
+
                 if getData("lastColor") == getData("bgColor") then
                     print("Updated `lastColor` to `bgColor`: Get Button")
-                    setData("lastColor", setColor(app.bgColor))
+                    setData("lastColor", app.bgColor)
                     updateColors(getData("bgColor"))
                 else
-                    print("Updated `lastColor` to `fgColor`: Get Button")
-                    setData("lastColor", setColor(app.fgColor))
+                    setData("lastColor", app.fgColor)
                     updateColors(getData("fgColor"))
                 end
             end
@@ -500,5 +491,5 @@ fgListenerCode = app.events:on('fgcolorchange', onFBGChange(true))
 bgListenerCode = app.events:on('bgcolorchange', onFBGChange(false))
 
 createDialog()
-calculateColors(setColor(getData("fgColor")))
+calculateColors(getData("fgColor"))
 updateDialogData()
