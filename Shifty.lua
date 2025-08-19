@@ -265,9 +265,9 @@ end
 ---[Update single Color]-----------
 local function updateColor(id, color, baseColor)
     local fg = true
-    print("Updating color:", id, color)
     if id == "bgColor" then fg = false end
 
+    setData(id, setColor(color))
     app[id] = getColor(fg, baseColor)
 end
 ---[Update All Color Palettes]-----
@@ -311,11 +311,13 @@ local function onFBGChange(fg)
                 color = app.fgColor
                 setData("fgColor", setColor(color))
                 setData("fgAlpha", color.alpha)
+                print("Updated `lastColor` to `fgColor`: onFBGChange")
 
             else
                 color = app.bgColor
                 setData("bgColor", setColor(color))
                 setData("bgAlpha", color.alpha)
+                print("Updated `lastColor` to `bgColor`: onFBGChange")
             end
             setData("lastColor", setColor(color))
             updateColors(setColor(color))
@@ -336,13 +338,23 @@ local function onShadesClick(ev)
     local middleClick = MouseButton.MIDDLE
     local displayColor = setColor(ev.color)
 
-    if (action == leftClick) then updateColor("fgColor", displayColor, ev.color)
+    if (action == leftClick) then
+        print("Updated `lastColor` to `fgColor`: onShadesClick")
+        updateColor("fgColor", displayColor, ev.color)
     elseif (action == middleClick) then
-        if getData("fgColor") == getData("lastColor") then updateColor("fgColor", displayColor, ev.color)
-        else updateColor("bgColor", displayColor, ev.color) end
+        if getData("fgColor") == getData("lastColor") then
+            print("Updated `lastColor` to `fgColor`: onShadesClick")
+            updateColor("fgColor", displayColor, ev.color)
+        else
+            print("Updated `lastColor` to `bgColor`: onShadesClick")
+            updateColor("bgColor", displayColor, ev.color)
+        end
         setData("lastColor", displayColor)
         updateColors(displayColor)
-    elseif (action == rightClick) then updateColor("bgColor", displayColor, ev.color) end
+    elseif (action == rightClick) then
+        print("Updated `lastColor` to `bgColor`: onShadesClick")
+        updateColor("bgColor", displayColor, ev.color)
+    end
 end
 
 local function showHelp()
@@ -423,8 +435,9 @@ local function Settings()
                 :separator{"Shade Settings:"}
                 :label{ text = "Cool" }
                 :label{ text = "Warm" }
-                :color{ id = "lowTemp", lable = "Temps:", color = low, onchange = updateTemp("lowTemp") }
+                :color{ id = "lowTemp", label = "Temps:", color = low, onchange = updateTemp("lowTemp") }
                 :color{ id = "highTemp", color = high, onchange = updateTemp("highTemp") }
+                :separator{}
                 :slider{ id = "intensity", label = "Intensity:", min = 1, max = 200, value = getValue("intensity"), onchange = updateValue("intensity") }
                 :slider{ id = "peak", label = "Peak:", min = 1, max = 100, value = getValue("peak"), onchange = updateValue("peak") }
                 :slider{ id = "sway", label = "Sway:", min = 1, max = 100, value = getValue("sway"), onchange = updateValue("sway") }
@@ -444,20 +457,21 @@ local function createDialog()
     dlg :separator("Base Colors:")
         :shades{ id = "base", colors = { setColor(getData("fgColor")), setColor(getData("bgColor")) },
             onclick = function(ev)
+                print("Updated `lastColor` to `Selected Color`: Base Colors")
                 setData("lastColor", setColor(ev.color))
                 updateColors(setColor(ev.color))
             end
         }
         :button{ id = "get", text = "Get", onclick = function()
-                setData("fgColor", setColor(app.fgColor))
-                setData("bgColor", setColor(app.bgColor))
-                local lastColor = getData("lastColor")
-                local fgColor = getData("fgColor")
-
-                if lastColor == fgColor then setData("lastColor", app.fgColor)
-                else setData("lastColor", app.bgColor) end
-
-                updateColors(getData("lastColor"))
+                if getData("lastColor") == getData("bgColor") then
+                    print("Updated `lastColor` to `bgColor`: Get Button")
+                    setData("lastColor", setColor(app.bgColor))
+                    updateColors(getData("bgColor"))
+                else
+                    print("Updated `lastColor` to `fgColor`: Get Button")
+                    setData("lastColor", setColor(app.fgColor))
+                    updateColors(getData("fgColor"))
+                end
             end
         }
         -- Base Palettes
