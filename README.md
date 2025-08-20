@@ -3,7 +3,7 @@
 
 - - - - -
 
-Shifty is a small, community driven, palette generation script based on the PyxelEdit feature.&nbsp;It offers multiple different palette generation options; from shading to mixing,&nbsp;as well as the ability to customize its various settings to your liking.
+Shifty is a small, community driven, palette generation script based on the PyxelEdit feature. It offers multiple different palette generation options; from shading to mixing, as well as the ability to customize its various settings to your liking.
 
 <div align="center">
 
@@ -15,7 +15,7 @@ Shifty is a small, community driven, palette generation script based on the Pyxe
 
 </div>
 
-The project was started by&nbsp;domjohn&nbsp;over on the Aseprite forums, where many people would continue contributing to it. Mine is just version 6 of this community project. It comes with several fixes, a cleaned up UI, and a bunch of additional features for you to play around with. I have also gone through the effort of cleaning up the code base in case anyone wants to help continue supporting the project. I will continue to update it as I see fit, adding/tweaking features if I feel like the script could use it.
+The project was started by the user domjohn over on the Aseprite forums, where many people would continue contributing to it. Mine is just version 6.0 of this community project. It comes with several fixes, a cleaned up UI, and a bunch of additional features for you to play around with. I have also gone through the effort of cleaning up the code base in case anyone wants to help continue supporting the project. I will continue to update it as I see fit, adding/tweaking features if wanted/needed.
 
 <div align="center">
 
@@ -26,6 +26,21 @@ The project was started by&nbsp;domjohn&nbsp;over on the Aseprite forums, where 
 - - - - -
 
 </div>
+
+Intallation:
+
+1. Download the script file from the <a style="font-family: inherit;" href="https://github.com/SaltSouls/Shifty/releases">releases</a> page.
+2. Open Aseprite and go to File -> Scripts -> Open Scripts Folder.
+3. Copy the script file into Aseprite’s scripts folder.
+
+- - - - -
+
+Usage:
+
+- In Aseprite, go to File -> Scripts -> Shifty.
+- Doing so will open a new instance of the Shifty script.
+
+- - - - -
 
 This script is a collaborative effort by the Aseprite community and is provided at no cost. If you have been forced to pay for this script, it is a scam, and the page should be reported to the one of the active maintainers.
 
