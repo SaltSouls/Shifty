@@ -1,8 +1,15 @@
-<div align="center"><img src="https://img.itch.zone/aW1nLzIyODEzNDc2LnBuZw==/original/h%2BbqLE.png" /></div>
+<div align="center"><img src="https://github.com/SaltSouls/Shifty/blob/main/images/shifty_banner.png" /></div>
 <h3>
+
+- - - - -
+
 Shifty is a small, community driven, palette generation script based on the PyxelEdit feature.&nbsp;It offers multiple different palette generation options; from shading to mixing,&nbsp;as well as the ability to customize its various settings to your liking.
 
 <div align="center">
+
+- - - - -
+
+<div align="center"><img src="https://github.com/SaltSouls/Shifty/blob/main/images/example_xeleph.png" /></div>
 
 - - - - -
 
@@ -11,6 +18,10 @@ Shifty is a small, community driven, palette generation script based on the Pyxe
 The project was started by&nbsp;domjohn&nbsp;over on the Aseprite forums, where many people would continue contributing to it. Mine is just version 6 of this community project. It comes with several fixes, a cleaned up UI, and a bunch of additional features for you to play around with. I have also gone through the effort of cleaning up the code base in case anyone wants to help continue supporting the project. I will continue to update it as I see fit, adding/tweaking features if I feel like the script could use it.
 
 <div align="center">
+
+- - - - -
+
+<div align="center"><img src="https://github.com/SaltSouls/Shifty/blob/main/images/interface_combined.png" /></div>
 
 - - - - -
 
