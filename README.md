@@ -30,14 +30,14 @@ The project was started by the user domjohn over on the Aseprite forums, where m
 Intallation:
 
 1. Download the script file from the <a style="font-family: inherit;" href="https://github.com/SaltSouls/Shifty/releases">releases</a> page.
-2. Open Aseprite and go to File -> Scripts -> Open Scripts Folder.
+2. Open Aseprite and go to: File -> Scripts -> Open Scripts Folder.
 3. Copy the script file into Aseprite’s scripts folder.
 
 - - - - -
 
 Usage:
 
-- In Aseprite, go to File -> Scripts -> Shifty.
+- In Aseprite, go to: File -> Scripts -> Shifty.
 - Doing so will open a new instance of the Shifty script.
 
 - - - - -
