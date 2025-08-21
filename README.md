@@ -1,4 +1,4 @@
-<div align="center"><img src="https://github.com/SaltSouls/Shifty/blob/main/images/shifty_banner.png" /></div>
+<div align="center"><a href="https://truesalt.itch.io/shifty"><img src="https://github.com/SaltSouls/Shifty/blob/main/images/shifty_banner.png" /></a></div>
 <h3>
 
 - - - - -
