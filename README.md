@@ -42,7 +42,7 @@ Usage:
 
 - - - - -
 
-This script is a collaborative effort by the Aseprite community and is provided at no cost. If you have been forced to pay for this script, it is a scam, and the page should be reported to the one of the active maintainers.
+This script is a collaborative effort by the Aseprite community and is provided at no cost. If you have been forced to pay for this script, it is a scam, and the page should be reported to one of the active maintainers.
 
 <div align="center">
 
