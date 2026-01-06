@@ -15,7 +15,7 @@ Shifty is a small, community driven, palette generation script based on the Pyxe
 
 </div>
 
-The project was started by the user domjohn over on the Aseprite forums, where many people would continue contributing to it. Mine is just version 6.0 of this community project. It comes with several fixes, a cleaned up UI, and a bunch of additional features for you to play around with. I have also gone through the effort of cleaning up the code base in case anyone wants to help continue supporting the project. I will continue to update it as I see fit, adding/tweaking features if wanted/needed.
+The project was started by the user domjohn over on the Aseprite forums, where many people would continue contributing to it. Mine is just the latest version of this community project. It comes with several fixes, a cleaned up UI, and a bunch of additional features for you to play around with. I have also gone through the effort of cleaning up the code base in case anyone wants to help continue supporting the project. I will continue to update it as I see fit, adding/tweaking features if wanted/needed.
 
 <div align="center">
 
