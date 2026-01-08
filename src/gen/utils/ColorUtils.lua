@@ -1,7 +1,7 @@
 -----------------------------------
 -- Imports
 -----------------------------------
-local Settings = Import("core/Settings.lua")
+local Settings = Import("src/state/Settings.lua")
 
 local ColorUtils = {}
 
@@ -37,8 +37,8 @@ end
 
 -- Gets the distance between two colors
 function ColorUtils.getDistance(color1, color2)
-    local hue = math.abs(color1.hue - color2.hue)
-    local sat = math.abs(color1.saturation - color2.saturation)
+    local hue   = math.abs(color1.hue - color2.hue)
+    local sat   = math.abs(color1.saturation - color2.saturation)
     local light = math.abs(color1.lightness - color2.lightness)
     return (hue + sat + light)
 end

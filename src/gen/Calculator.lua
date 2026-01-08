@@ -1,14 +1,13 @@
 -----------------------------------
 -- Imports
 -----------------------------------
-local Settings   = Import("core/Settings.lua")
-local ColorUtils = Import("core/color/utils/ColorUtils.lua")
+local Settings   = Import("src/state/Settings.lua")
+local ColorUtils = Import("src/gen/utils/ColorUtils.lua")
 
 -- Static imports
 local maxHue       = Settings.maxHue
 local clamp        = ColorUtils.clamp
 local lerp         = ColorUtils.lerp
-local getAsPercent = ColorUtils.getAsPercent
 local getDistance  = ColorUtils.getDistance
 
 local Calculator = {}
@@ -73,11 +72,27 @@ local function adjustLight(color, shifted)
     return lerp(lowShift, highShift, t)
 end
 
-function Calculator.shade(baseColor, positionFactor, lightDirection, targetHue, mixProportion)
+-- NOTE: intensityPct and peakPct are optional overrides (0-1).
+-- Passing these makes shading deterministic with respect to a Settings snapshot.
+function Calculator.shade(baseColor, positionFactor, lightDirection, targetHue, mixProportion, intensityPct, peakPct)
     local shiftLightness = Calculator.shiftLightness
     local mixColors      = Calculator.mix
-    local tempIntensity  = getAsPercent("intensity", 2)
-    local tempPeak       = getAsPercent("peak")
+    local tempIntensity
+    local tempPeak
+
+    -- intensity is expected in the same scale as the old getAsPercent("intensity", 2)
+    -- (i.e. 0..2).
+    if intensityPct ~= nil then
+        tempIntensity = clamp(tonumber(intensityPct) or 0, 0, 2)
+    else
+        tempIntensity = (clamp(tonumber(Settings.get("intensity")) or Settings.getDefault("intensity"), 0, 100) * 2) / 100
+    end
+
+    if peakPct ~= nil then
+        tempPeak = clamp(tonumber(peakPct) or 0, 0, 1)
+    else
+        tempPeak = clamp(tonumber(Settings.get("peak")) or Settings.getDefault("peak"), 0, 100) / 100
+    end
 
     -- How strong the hue/sat shift should be
     local function computeIntensityScale(intensity)
@@ -110,24 +125,41 @@ end
 -----------------------------------
 -- Temperature Functions
 -----------------------------------
-function Calculator.temp(hue, targetId)
-    local newHue = hue
-    local isWarm = targetId == "highTemp"
-    local minHue = isWarm and 55 or 240
-    local shift = isWarm and -100 or 100
-    local rangeMin = 55
-    local rangeMax = isWarm and 255 or 240
+-- normalizes hue distance
+local function normHue(hue)
+    hue = hue % maxHue
+    if hue < 0 then hue = hue + maxHue end
+    return hue
+end
 
-    -- Calculate hue values, dragging towards blue for cool and yellow for warm
-    if hue >= rangeMin and hue <= rangeMax then
-        newHue = isWarm and math.max(minHue, hue + shift) or math.min(minHue, hue + shift)
-    else
-        newHue = (hue - shift) % maxHue
-        if isWarm and newHue > minHue and (hue < 55 or hue > 315) then newHue = minHue
-        elseif not isWarm and newHue < minHue then newHue = minHue end
+-- returns delta in [-180, 180)
+local function shortestHueDelta(a, b)
+    a = normHue(a)
+    b = normHue(b)
+    return (b - a + 540) % maxHue - 180
+end
+
+local function stepTowardHue(fromHue, toHue, step)
+    local d = shortestHueDelta(fromHue, toHue)
+    if math.abs(d) <= step then return normHue(toHue) end
+    return normHue(fromHue + (d > 0 and step or -step))
+end
+
+function Calculator.temp(hue, anchorHue, band, step)
+    hue = normHue(hue)
+    anchorHue = normHue(anchorHue)
+    band = clamp(band, 0, 180)
+    step = clamp(step, 0, 180)
+
+    local distance = shortestHueDelta(hue, anchorHue)
+    local absDistance = math.abs(distance)
+
+    if absDistance > band then
+        local edgeHue = normHue(anchorHue - (distance > 0 and band or -band))
+        return stepTowardHue(hue, edgeHue, step)
     end
 
-    Settings.set(targetId, newHue)
+    return stepTowardHue(hue, anchorHue, math.min(step, 3))
 end
 
 return Calculator

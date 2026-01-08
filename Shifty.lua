@@ -54,9 +54,9 @@ end
 -----------------------------------
 -- Imports
 -----------------------------------
-local Settings   = Import("core/Settings.lua")
-local Shifty     = Import("core/ui/views/ShiftyDlg.lua")
-local Controller = Import("core/ui/controllers/ShiftyController.lua")
+local Settings   = Import("src/state/Settings.lua")
+local Shifty     = Import("src/ui/ShiftyDialog.lua")
+local App = Import("src/app/ShiftyApp.lua")
 
 -----------------------------------
 -- Global Variables
@@ -74,8 +74,9 @@ function init(plugin)
         title   = "Shifty",
         group   = "view_screen",
         onclick = function()
+            if not app.isUIAvailable then return end
             Shifty.start()
-            Controller.updatePalettes(Settings.getCache("fgColor"))
+            App.rebuild(Settings.getCache("fgColor"))
         end
     }
 end
