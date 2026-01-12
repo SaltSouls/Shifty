@@ -57,22 +57,43 @@ function ShiftyDialog.start()
         }
 
         SHIFTY_DLG = dlg
-        SHIFTY_DLG:separator { text = "Base Colors:" }
-                  :shades    { id = "base", colors = { fgColor, bgColor }, onclick = onBaseSwatchClick }
-                  :button    { id = "get", text = "&Get", onclick = onGetClick }
-                  :tab       { id = "basePalettes", text = "Base Palettes" }
+        SHIFTY_DLG
+            :separator { text = "Base Colors:" }
+            :shades {
+                id = "base",
+                colors = { fgColor, bgColor },
+                onclick = onBaseSwatchClick
+            }
+            :button {
+                id = "get",
+                text = "&Get",
+                onclick = onGetClick
+            }
+            :tab {
+                id = "basePalettes",
+                text = "Base Palettes"
+            }
 
         addPaletteRows(SHIFTY_DLG, Palettes.BASE)
 
-        SHIFTY_DLG:tab       { id = "extraPalettes", text = "Extra Palettes" }
+        SHIFTY_DLG
+            :tab {
+                id = "extraPalettes",
+                text = "Extra Palettes"
+            }
 
         addPaletteRows(SHIFTY_DLG, Palettes.EXTRA)
 
-        SHIFTY_DLG:endtabs   {}
-                  :button    { id = "settings", text = "&Settings", onclick = SettingsDialog.open }
-                  :separator { text = "version: " .. SHIFTY_VERSION }
-                  :show      { wait = false }
+        SHIFTY_DLG:endtabs {}
+            :button {
+                id = "settings",
+                text = "&Settings",
+                onclick = SettingsDialog.open
+            }
+            :separator { text = "version: " .. SHIFTY_VERSION }
+            :show      { wait = false }
 
+        -- Set bounds when creating dialog to ensure nice/compact display.
         local bounds      = SHIFTY_DLG.bounds
         SHIFTY_DLG.bounds = Rectangle { bounds.x, bounds.y, 176, bounds.height }
     end)

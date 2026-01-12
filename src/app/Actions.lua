@@ -78,9 +78,7 @@ end
 ---@param ev ShiftySwatchEvent
 function Actions.onBaseSwatchClick(ev)
     local color = ev.color
-    if not color then
-        return
-    end
+    if not color then return end
 
     local fg = Settings.getCache("fgColor")
     if ColorUtils.isSameColor(color, fg) then Settings.setCache("selected", "fg")

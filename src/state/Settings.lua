@@ -89,8 +89,7 @@ local function isNumber(v) return type(v) == "number" end
 local function isBoolean(v) return type(v) == "boolean" end
 local function inRange(v, min, max) return isNumber(v) and v >= min and v <= max end
 local function oneOf(v, ...)
-    for i = 1, select("#", ...) do
-        if v == select(i, ...) then return true end end
+    for i = 1, select("#", ...) do if v == select(i, ...) then return true end end
     return false
 end
 

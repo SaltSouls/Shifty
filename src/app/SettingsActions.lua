@@ -30,11 +30,26 @@ function SettingsActions.toggle(id)
 
         if id == "autoTemp" and SETTINGS_DLG then
             local enabled = Settings.get("autoTemp")
-            SETTINGS_DLG:modify { id = "autoLowTemp", visible = enabled }
-            SETTINGS_DLG:modify { id = "autoHighTemp", visible = enabled }
-            SETTINGS_DLG:modify { id = "-1", visible = enabled }
-            SETTINGS_DLG:modify { id = "0", visible = enabled }
-            SETTINGS_DLG:modify { id = "1", visible = enabled }
+            SETTINGS_DLG:modify {
+                id = "autoLowTemp",
+                visible = enabled
+            }
+            SETTINGS_DLG:modify {
+                id = "autoHighTemp",
+                visible = enabled
+            }
+            SETTINGS_DLG:modify {
+                id = "-1",
+                visible = enabled
+            }
+            SETTINGS_DLG:modify {
+                id = "0",
+                visible = enabled
+            }
+            SETTINGS_DLG:modify {
+                id = "1",
+                visible = enabled
+            }
         end
 
         ShiftyApp.requestRebuild(Settings.getBaseColor())
@@ -101,7 +116,10 @@ function SettingsActions.setTempHue(id)
         Settings.set(id, data.hue)
 
         if sat ~= 1 or light ~= 0.5 or alpha ~= 255 then
-            SETTINGS_DLG:modify { id = id, color = getTemp(data.hue) }
+            SETTINGS_DLG:modify {
+                id = id,
+                color = getTemp(data.hue)
+            }
             return
         end
 
@@ -118,12 +136,21 @@ local function syncSetting(id)
     local isSlots    = (id == "slots")
 
     if isTemp or isAutoTemp then
-        SETTINGS_DLG:modify { id = id, color = getTemp(Settings.get(id)) }
+        SETTINGS_DLG:modify {
+            id = id,
+            color = getTemp(Settings.get(id))
+        }
     elseif isSlots then
         local radioId = tostring(Settings.get("slots"))
-        SETTINGS_DLG:modify { id = radioId, selected = true }
+        SETTINGS_DLG:modify {
+            id = radioId,
+            selected = true
+        }
     else
-        SETTINGS_DLG:modify { id = id, value = Settings.get(id) }
+        SETTINGS_DLG:modify {
+            id = id,
+            value = Settings.get(id)
+        }
     end
 end
 
