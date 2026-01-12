@@ -1,5 +1,13 @@
+---@diagnostic disable: undefined-global
+
+--------------------------------------------------------------------------------
+-- HelpDialog
+--------------------------------------------------------------------------------
+
+---@class HelpDlg
 local HelpDlg = {}
 
+---Shows a static help popup.
 function HelpDlg.show()
     app.alert {
         title = "Help",
@@ -37,7 +45,9 @@ function HelpDlg.show()
             "- Sway (1-100): Sets strength of temperature-based hue shifts.",
             "- Saturation (1-100): Adjusts intensity of saturation gradient.",
             "- Light (1-100): Adjusts intensity of lightness gradient.",
-            "- Slots (7-15): Number of swatches per palette.",
+            "- Slots (7/9/11/15): Number of swatches generated per palette.",
+            "- Update Delay (ms): Delay before regenerating palettes when sliders change.",
+            "   (Higher Update Delay values reduce CPU usage while tweaking sliders.)",
             ""
         }
     }

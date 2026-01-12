@@ -1,26 +1,25 @@
+---@class Temperature
 local Temperature = {}
 
------------------------------------
--- Temperature Derivation
------------------------------------
--- Computes auto-derived low/high temperature hues based on a base hue.
+--------------------------------------------------------------------------------
+-- Temperature
 --
--- Params:
---  state: Settings.snapshot() table
---  hue:   baseColor.hue
---  Calculator: Calculator module (passed in to avoid import cycles)
---
--- Returns:
---  autoLowHue, autoHighHue (numbers) or nil, nil if autoTemp disabled.
+-- Computes "auto" low/high temperature hues when Auto Temp is enabled.
+--------------------------------------------------------------------------------
+
+---Computes auto low/high hues.
+---@param state ShiftySettingsSnapshot
+---@param hue number Base hue in degrees.
+---@param Calculator { temp: fun(hue:number, anchor:number, step:number):number }
+---@return number? lowHue
+---@return number? highHue
 function Temperature.compute(state, hue, Calculator)
     if not state or not state.autoTemp then return nil, nil end
     if not hue or not Calculator or not Calculator.temp then return nil, nil end
-
-    local band = state.tempBand
     local step = state.tempPull
 
-    local autoLowHue  = Calculator.temp(hue, state.lowTemp,  band, step)
-    local autoHighHue = Calculator.temp(hue, state.highTemp, band, step)
+    local autoLowHue  = Calculator.temp(hue, state.lowTemp, step)
+    local autoHighHue = Calculator.temp(hue, state.highTemp, step)
     return autoLowHue, autoHighHue
 end
 

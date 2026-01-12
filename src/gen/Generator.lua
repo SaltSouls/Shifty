@@ -1,38 +1,45 @@
------------------------------------
--- Imports
------------------------------------
 local Settings   = Import("src/state/Settings.lua")
 local Palettes   = Import("src/palettes/Registry.lua")
 local ColorUtils = Import("src/gen/utils/ColorUtils.lua")
 local Calculator = Import("src/gen/Calculator.lua")
 
--- Static imports
-local maxHue = Settings.maxHue
-local clamp  = ColorUtils.clamp
+---@diagnostic disable: undefined-global
 
+--------------------------------------------------------------------------------
+-- Generator
+--
+-- Produces a "registry" of palette groups (shade ramps, hue shifts, harmonics).
+--------------------------------------------------------------------------------
+
+---@class Generator
 local Generator = {}
 
+local maxHue       = Settings.maxHue
+local getAsPercent = ColorUtils.getAsPercent
+
+---Tweakables used by hue shift/jump variants.
+---@class GeneratorConstraints
+---@field hueShiftSpread number
+---@field hueJumpSpread number
+---@type GeneratorConstraints
 local constraints = {
+    -- Smaller spread for subtle hue shifts.
     hueShiftSpread = 0.75,
+    -- Larger spread for more dramatic "jump".
     hueJumpSpread  = 3.0
 }
 
------------------------------------
--- Generator Functions
------------------------------------
--- Pure generation step.
--- Takes a Settings.snapshot() table and returns a full palette registry.
+---Generates all palette groups into a fresh registry.
+---@param state ShiftySettingsSnapshot
+---@return table<string, Color[]> registry
 function Generator.generate(state)
     local lowTemp    = state.autoTemp and state.autoLowTemp or state.lowTemp
     local highTemp   = state.autoTemp and state.autoHighTemp or state.highTemp
-
-    -- Percent-based settings are stored 0-100 in Settings.
-    -- Converting them here keeps generation fully determined by the snapshot.
-    local sway       = clamp(tonumber(state.sway) or 0, 0, 100) / 100
-    local saturation = clamp(tonumber(state.saturation) or 0, 0, 100) / 100
-    local light      = clamp(tonumber(state.lightness) or 0, 0, 100) / 100
-    local intensity  = (clamp(tonumber(state.intensity) or 0, 0, 100) * 2) / 100
-    local peak       = clamp(tonumber(state.peak) or 0, 0, 100) / 100
+    local sway       = getAsPercent(state.sway, 1)
+    local saturation = getAsPercent(state.saturation, 1)
+    local light      = getAsPercent(state.lightness, 1)
+    local intensity  = getAsPercent(state.intensity, 2)
+    local peak       = getAsPercent(state.peak, 1)
     local slots      = state.slots
 
     local baseColor  = state.baseColor
@@ -48,7 +55,6 @@ function Generator.generate(state)
         local factor    = ((slots - 1) / 2 - i + 1) / ((slots - 1) / 2)
         local direction = -1
 
-        -- Invert direction after reaching the middle
         if i >= slots / 2 then
             targetHue = highTemp
             factor    = -factor

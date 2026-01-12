@@ -23,7 +23,7 @@
     "contributes": {
         "scripts": [
             {
-                "path": "./Shifty.lua"
+                "path": "./src/Shifty.lua"
             }
         ]
     }

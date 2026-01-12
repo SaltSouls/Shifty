@@ -1,6 +1,3 @@
------------------------------------
--- Imports
------------------------------------
 local Settings    = Import("src/state/Settings.lua")
 local Palettes    = Import("src/palettes/Registry.lua")
 local Generator   = Import("src/gen/Generator.lua")
@@ -9,12 +6,28 @@ local Temperature = Import("src/gen/Temperature.lua")
 local Render      = Import("src/ui/Render.lua")
 local Scheduler   = Import("src/app/Scheduler.lua")
 
+---@diagnostic disable: undefined-global
+
+--------------------------------------------------------------------------------
+-- ShiftyApp
+--
+-- Orchestrates palette generation + UI refreshes.
+-- (Settings -> Temperature -> Generator -> Registry -> Render)
+--------------------------------------------------------------------------------
+
+---@class ShiftyApp
+---@field rebuild fun(baseColor?: Color)
+---@field requestRebuild fun(baseColor?: Color)
+---@field setSchedulerDelay fun(ms:number)
 local ShiftyApp = {}
 
-
--- Update scheduler for rebuilding UI elements
 local requestRebuild
 
+---Builds a rebuild function that optionally debounces based on `updateDelay`.
+---
+---When delay is > 0 we wrap rebuild in a scheduler that resets its timer on each
+---call (slider drag friendly).
+---@return fun(baseColor?: Color)
 local function rebuildRequestFn()
     local ms = Settings.get("updateDelay") or 0
     if ms <= 0 then return function(baseColor) ShiftyApp.rebuild(baseColor) end end
@@ -23,21 +36,14 @@ end
 
 requestRebuild = rebuildRequestFn()
 
------------------------------------
--- Rebuild Pipeline
------------------------------------
--- 1) Snapshot inputs
--- 2) Derive auto temps (if enabled)
--- 3) Generate palettes (pure)
--- 4) Replace palette registry (atomic)
--- 5) Refresh UI
+---Regenerates all palette groups using the current settings snapshot.
+---@param baseColor? Color If omitted, uses last/base cached colors.
 function ShiftyApp.rebuild(baseColor)
     baseColor = baseColor or Settings.getCache("lastColor") or Settings.getBaseColor()
     if not baseColor then return end
     Settings.setCache("lastColor", baseColor)
 
     local state = Settings.snapshot()
-    -- Allow generation from a clicked palette color without changing selection.
     state.baseColor = baseColor
 
     local autoLow, autoHigh = Temperature.compute(state, baseColor.hue, Calculator)
@@ -55,10 +61,12 @@ function ShiftyApp.rebuild(baseColor)
     Render.refreshMain()
 end
 
--- Update debounce behavior when the user changes UI responsiveness.
+---Recomputes the debounced rebuild function after the delay setting changes.
+---@param _ number The delay in ms (unused; read from settings).
 function ShiftyApp.setSchedulerDelay(_) requestRebuild = rebuildRequestFn() end
 
--- Public API for UI/controllers
+---Requests a rebuild, optionally debounced by the current `updateDelay`.
+---@param baseColor? Color
 function ShiftyApp.requestRebuild(baseColor) requestRebuild(baseColor) end
 
 return ShiftyApp

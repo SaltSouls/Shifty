@@ -1,25 +1,31 @@
------------------------------------
--- Shifty Dialog (UI)
------------------------------------
-local Settings      = Import("src/state/Settings.lua")
-local ColorUtils    = Import("src/gen/utils/ColorUtils.lua")
-local Palettes      = Import("src/palettes/Registry.lua")
-local Actions       = Import("src/app/Actions.lua")
+local Settings       = Import("src/state/Settings.lua")
+local ColorUtils     = Import("src/gen/utils/ColorUtils.lua")
+local Palettes       = Import("src/palettes/Registry.lua")
+local Actions        = Import("src/app/Actions.lua")
 local SettingsDialog = Import("src/ui/SettingsDialog.lua")
 
--- Static imports
-local createColor = ColorUtils.createColor
+---@diagnostic disable: undefined-global
 
+--------------------------------------------------------------------------------
+-- ShiftyDialog
+--
+-- Builds the main Shifty dialog (base swatches + palette tabs).
+--------------------------------------------------------------------------------
+
+---@class ShiftyDialog
 local ShiftyDialog = {}
 
+local createColor = ColorUtils.createColor
+
+---Creates (or recreates) the main dialog and installs FG/BG listeners.
+---
+---The listeners are removed on close to avoid leaking handlers across runs.
 function ShiftyDialog.start()
     local success, err = pcall(function()
         local fgColor = createColor(Settings.getCache("fgColor"))
         local bgColor = createColor(Settings.getCache("bgColor"))
 
-        -----------------------------------
-        -- Listener Functions
-        -----------------------------------
+        -- `app.events:on` returns a listener id used to unregister via `off`.
         local fgListenerCode = app.events:on("fgcolorchange", Actions.onFGorBGChange(true))
         local bgListenerCode = app.events:on("bgcolorchange", Actions.onFGorBGChange(false))
 

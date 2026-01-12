@@ -1,20 +1,34 @@
------------------------------------
--- Imports
------------------------------------
 local Settings   = Import("src/state/Settings.lua")
 local ColorUtils = Import("src/gen/utils/ColorUtils.lua")
 
--- Static imports
-local maxHue       = Settings.maxHue
-local clamp        = ColorUtils.clamp
-local lerp         = ColorUtils.lerp
-local getDistance  = ColorUtils.getDistance
+---@diagnostic disable: undefined-global
 
+--------------------------------------------------------------------------------
+-- Calculator
+--
+-- Color operations used by generators:
+-- - HSL shifting (hue/saturation/lightness)
+-- - RGB mixing
+-- - Temperature shading helpers
+--------------------------------------------------------------------------------
+
+---@class Calculator
 local Calculator = {}
 
------------------------------------
--- Shifting Functions
------------------------------------
+local maxHue            = Settings.maxHue
+local clamp             = ColorUtils.clamp
+local lerp              = ColorUtils.lerp
+local getAbsDistance    = ColorUtils.getAbsDistance
+local getDistance       = ColorUtils.getDistance
+
+--------------------------------------------------------------------------------
+-- HSL Shifts
+--------------------------------------------------------------------------------
+
+---Shifts a color's hue by a normalized amount.
+---@param color Color
+---@param amount number Normalized hue shift (1.0 = 360°).
+---@return Color
 function Calculator.shiftHue(color, amount)
     local newColor = Color(color)
     local shifted  = newColor.hue + amount * maxHue
@@ -22,6 +36,10 @@ function Calculator.shiftHue(color, amount)
     return newColor
 end
 
+---Shifts a color's saturation towards 1 (positive) or 0 (negative).
+---@param color Color
+---@param amount number -1..1
+---@return Color
 function Calculator.shiftSaturation(color, amount)
     local newColor   = Color(color)
     local saturation = newColor.saturation
@@ -31,6 +49,10 @@ function Calculator.shiftSaturation(color, amount)
     return newColor
 end
 
+---Shifts a color's lightness towards 1 (positive) or 0 (negative).
+---@param color Color
+---@param amount number -1..1
+---@return Color
 function Calculator.shiftLightness(color, amount)
     local newColor  = Color(color)
     local lightness = newColor.lightness
@@ -48,9 +70,15 @@ local function shiftHSL(color, hue, saturation, lightness)
     return shiftHue(shiftSaturation(shiftLightness(color, lightness), saturation), hue)
 end
 
------------------------------------
--- Mixing Functions
------------------------------------
+--------------------------------------------------------------------------------
+-- Mixing
+--------------------------------------------------------------------------------
+
+---Linearly mixes two colors in RGB space.
+---@param color1 Color
+---@param color2 Color
+---@param mixProportion number 0..1
+---@return Color
 function Calculator.mix(color1, color2, mixProportion)
     return Color {
         red   = clamp(lerp(color1.red, color2.red, mixProportion), 0, 255),
@@ -59,7 +87,10 @@ function Calculator.mix(color1, color2, mixProportion)
     }
 end
 
--- Adjusts lightness value depending on color similarity and direction
+--------------------------------------------------------------------------------
+-- Shade Generation
+--------------------------------------------------------------------------------
+
 local function adjustLight(color, shifted)
     local distance = getDistance(color, shifted)
     local lowShift  = 0.1
@@ -72,29 +103,22 @@ local function adjustLight(color, shifted)
     return lerp(lowShift, highShift, t)
 end
 
--- NOTE: intensityPct and peakPct are optional overrides (0-1).
--- Passing these makes shading deterministic with respect to a Settings snapshot.
+---Builds a shade swatch by shifting hue/temp, applying intensity/peak curves,
+---then mixing with base to keep the ramp coherent.
+---@param baseColor Color
+---@param positionFactor number -1..1 (where in the ramp this swatch sits)
+---@param lightDirection number -1 or 1
+---@param targetHue number Target hue in degrees
+---@param mixProportion number 0..1 mix weight between base and shifted
+---@param intensityPct number 0..2 (already scaled)
+---@param peakPct number 0..1 (already scaled)
+---@return Color
 function Calculator.shade(baseColor, positionFactor, lightDirection, targetHue, mixProportion, intensityPct, peakPct)
     local shiftLightness = Calculator.shiftLightness
     local mixColors      = Calculator.mix
-    local tempIntensity
-    local tempPeak
+    local tempIntensity  = clamp(tonumber(intensityPct), 0, 2)
+    local tempPeak       = clamp(tonumber(peakPct), 0, 1)
 
-    -- intensity is expected in the same scale as the old getAsPercent("intensity", 2)
-    -- (i.e. 0..2).
-    if intensityPct ~= nil then
-        tempIntensity = clamp(tonumber(intensityPct) or 0, 0, 2)
-    else
-        tempIntensity = (clamp(tonumber(Settings.get("intensity")) or Settings.getDefault("intensity"), 0, 100) * 2) / 100
-    end
-
-    if peakPct ~= nil then
-        tempPeak = clamp(tonumber(peakPct) or 0, 0, 1)
-    else
-        tempPeak = clamp(tonumber(Settings.get("peak")) or Settings.getDefault("peak"), 0, 100) / 100
-    end
-
-    -- How strong the hue/sat shift should be
     local function computeIntensityScale(intensity)
         local eased = intensity * intensity
         return lerp(0.1, 1.5, eased)
@@ -110,56 +134,77 @@ function Calculator.shade(baseColor, positionFactor, lightDirection, targetHue, 
     local shadeIntensity   = intensityScale * saturationBoost * positionFactor
     local peakOffset       = (tempPeak * 2 - 1) * positionFactor * lightDirection
 
-    -- Apply hue / saturation / lightness shift
     local shiftedColor = shiftHSL(baseColor, targetHue, shadeIntensity, peakOffset)
     shiftedColor.hue   = targetHue
 
-    -- Adjust lightness to keep perceived steps consistent
     local lightAdjustment = adjustLight(baseColor, shiftedColor)
 
-    -- Mix original with shifted color, then apply lightness correction
     local mixedColor = mixColors(baseColor, shiftedColor, mixProportion)
     return shiftLightness(mixedColor, lightAdjustment * positionFactor * lightDirection)
 end
 
------------------------------------
--- Temperature Functions
------------------------------------
--- normalizes hue distance
-local function normHue(hue)
-    hue = hue % maxHue
-    if hue < 0 then hue = hue + maxHue end
-    return hue
+local function wrapHue(hue) return (hue % maxHue + maxHue) % maxHue end
+
+--------------------------------------------------------------------------------
+-- Temperature Pull
+--------------------------------------------------------------------------------
+
+-- The "auto temp" feature gently moves the configured cool/warm anchors
+-- toward the current base hue. This keeps shading consistent when the user
+-- picks a new base color.
+
+local function getHueDistance(hue, target)
+    hue = wrapHue(hue)
+    target = wrapHue(target)
+
+    local diff = getAbsDistance(target, hue)
+    return math.min(diff, maxHue - diff)
 end
 
--- returns delta in [-180, 180)
-local function shortestHueDelta(a, b)
-    a = normHue(a)
-    b = normHue(b)
-    return (b - a + 540) % maxHue - 180
+local function getHueDirection(hue, target)
+    hue = wrapHue(hue)
+    target = wrapHue(target)
+
+    if hue == target then return 0 end
+    local up = (target - hue) % maxHue
+    return (up <= maxHue / 2) and 1 or -1
 end
 
-local function stepTowardHue(fromHue, toHue, step)
-    local d = shortestHueDelta(fromHue, toHue)
-    if math.abs(d) <= step then return normHue(toHue) end
-    return normHue(fromHue + (d > 0 and step or -step))
+local function stepHue(hue, target, step)
+    hue = wrapHue(hue)
+    target = wrapHue(target)
+    local minStep = step
+    local dir = getHueDirection(hue, target)
+    local distance = getHueDistance(hue, target)
+
+    if distance == 0 then return hue end
+    if distance <= minStep then return target end
+
+    local maxStep = step * 6
+    local easeRange = step * 8
+    local t = math.min(distance / easeRange, 1)
+    local eased = t * t
+
+    local move = minStep + ((maxStep - minStep) * eased)
+    move = math.min(move, distance)
+    return wrapHue(hue + (move * dir))
 end
 
-function Calculator.temp(hue, anchorHue, band, step)
-    hue = normHue(hue)
-    anchorHue = normHue(anchorHue)
-    band = clamp(band, 0, 180)
-    step = clamp(step, 0, 180)
+--------------------------------------------------------------------------------
+-- Temperature Pull
+--------------------------------------------------------------------------------
 
-    local distance = shortestHueDelta(hue, anchorHue)
-    local absDistance = math.abs(distance)
+---Moves `hue` towards `anchor` by a variable step.
+---@param hue number Current hue.
+---@param anchor number Target/anchor hue.
+---@param step number Base step size (higher = stronger pull).
+---@return number newHue
+function Calculator.temp(hue, anchor, step)
+    hue = tonumber(hue) or 0
+    anchor = tonumber(anchor) or 0
+    step = tonumber(step) or 0
 
-    if absDistance > band then
-        local edgeHue = normHue(anchorHue - (distance > 0 and band or -band))
-        return stepTowardHue(hue, edgeHue, step)
-    end
-
-    return stepTowardHue(hue, anchorHue, math.min(step, 3))
+    return stepHue(hue, anchor, step)
 end
 
 return Calculator

@@ -1,23 +1,32 @@
------------------------------------
--- Imports
------------------------------------
 local Settings   = Import("src/state/Settings.lua")
 local ColorUtils = Import("src/gen/utils/ColorUtils.lua")
 local Render     = Import("src/ui/Render.lua")
 local ShiftyApp  = Import("src/app/ShiftyApp.lua")
 
--- Static imports
+---@diagnostic disable: undefined-global
+
+--------------------------------------------------------------------------------
+-- SettingsActions
+--
+-- Event handlers for the Settings dialog UI controls.
+--------------------------------------------------------------------------------
+
+---@class SettingsActions
+local SettingsActions = {}
 local getTemp = ColorUtils.getTemp
 
-local SettingsActions = {}
+--------------------------------------------------------------------------------
+-- Toggle / Slider / Color Pickers
+--------------------------------------------------------------------------------
 
--- Toggle a boolean setting.
+---Toggles a boolean setting and triggers a rebuild.
+---@param id string
+---@return fun()
 function SettingsActions.toggle(id)
     return function()
         if not SETTINGS_DLG then return end
         Settings.set(id, not Settings.get(id))
 
-        -- autoTemp affects both the UI and the effective temperatures.
         if id == "autoTemp" and SETTINGS_DLG then
             local enabled = Settings.get("autoTemp")
             SETTINGS_DLG:modify { id = "autoLowTemp",  visible = enabled }
@@ -28,7 +37,9 @@ function SettingsActions.toggle(id)
     end
 end
 
--- Set a numeric setting from the dialog widget value.
+---Reads a numeric control value from the dialog and stores it.
+---@param id string
+---@return fun()
 function SettingsActions.setNumber(id)
     return function()
         if not SETTINGS_DLG then return end
@@ -39,7 +50,7 @@ function SettingsActions.setNumber(id)
     end
 end
 
--- UI update delay
+---Updates debouncer delay for rebuild requests.
 function SettingsActions.setUpdateDelay()
     if not SETTINGS_DLG then return end
     local value = SETTINGS_DLG.data.updateDelay
@@ -48,7 +59,9 @@ function SettingsActions.setUpdateDelay()
     ShiftyApp.setSchedulerDelay(value)
 end
 
--- For radio buttons / explicit slot values.
+---Sets the swatch count per palette (radio group).
+---@param n integer
+---@return fun()
 function SettingsActions.setSlots(n)
     return function()
         Settings.set("slots", n)
@@ -56,7 +69,12 @@ function SettingsActions.setSlots(n)
     end
 end
 
--- Color picker for lowTemp/highTemp.
+---Handles temperature color pickers.
+---
+---Aseprite's color widget can be edited by the user. We only treat it as a
+---valid hue pick if the user hasn't changed the helper's SAT/L/L alpha values.
+---@param id 'lowTemp'|'highTemp'
+---@return fun()
 function SettingsActions.setTempHue(id)
     return function()
         if not SETTINGS_DLG then return end
@@ -65,11 +83,9 @@ function SettingsActions.setTempHue(id)
         local light = data.lightness
         local alpha = data.alpha
 
-        -- Preserve the hue field while the user is editing.
         if data.hue == nil then data.hue = Settings.get(id) end
         Settings.set(id, data.hue)
 
-        -- If the user tweaks S/L/A, don't treat it as a final hue selection.
         if sat ~= 1 or light ~= 0.5 or alpha ~= 255 then
             SETTINGS_DLG:modify { id = id, color = getTemp(data.hue) }
             return
@@ -81,6 +97,7 @@ function SettingsActions.setTempHue(id)
 end
 
 local function syncSetting(id)
+    -- Keeps UI controls in sync when we programmatically change setting values.
     if not SETTINGS_DLG then return end
     local isTemp      = (id == "lowTemp" or id == "highTemp")
     local isAutoTemp  = (id == "autoLowTemp" or id == "autoHighTemp")
@@ -94,6 +111,11 @@ local function syncSetting(id)
     else SETTINGS_DLG:modify { id = id, value = Settings.get(id) } end
 end
 
+--------------------------------------------------------------------------------
+-- Reset
+--------------------------------------------------------------------------------
+
+---Resets all "defaultable" settings to their defaults and refreshes the UI.
 function SettingsActions.resetDefaults()
     if not SETTINGS_DLG then return end
 

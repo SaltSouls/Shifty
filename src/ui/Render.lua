@@ -1,17 +1,22 @@
------------------------------------
--- UI Render Helpers
------------------------------------
 local Settings   = Import("src/state/Settings.lua")
 local ColorUtils = Import("src/gen/utils/ColorUtils.lua")
 local Palettes   = Import("src/palettes/Registry.lua")
 
+---@diagnostic disable: undefined-global
+
+--------------------------------------------------------------------------------
+-- Render
+--
+-- UI refresh helpers (reads from Cache/Settings + current Registry).
+--------------------------------------------------------------------------------
+
+---@class Render
 local Render = {}
 
--- Static imports
 local getTemp     = ColorUtils.getTemp
 local createColor = ColorUtils.createColor
 
--- Refreshes the main Shifty dialog (base swatches + palette grids).
+---Refreshes the main Shifty dialog swatches.
 function Render.refreshMain()
     if not SHIFTY_DLG then return end
 
@@ -24,7 +29,7 @@ function Render.refreshMain()
     end
 end
 
--- Refreshes the auto-temp display swatches in the Settings dialog.
+---Refreshes the "Display" temp colors in the Settings dialog.
 function Render.refreshAutoTemps()
     if not SETTINGS_DLG or not Settings.get("autoTemp") then return end
     SETTINGS_DLG:modify { id = "autoLowTemp",  color = getTemp(Settings.get("autoLowTemp")) }

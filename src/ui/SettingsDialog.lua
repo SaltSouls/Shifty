@@ -1,13 +1,20 @@
------------------------------------
--- Settings Dialog (UI)
------------------------------------
 local Settings        = Import("src/state/Settings.lua")
 local ColorUtils      = Import("src/gen/utils/ColorUtils.lua")
 local SettingsActions = Import("src/app/SettingsActions.lua")
 local HelpDialog      = Import("src/ui/HelpDialog.lua")
 
+---@diagnostic disable: undefined-global
+
+--------------------------------------------------------------------------------
+-- SettingsDialog
+--
+-- Builds the advanced settings dialog and wires controls to SettingsActions.
+--------------------------------------------------------------------------------
+
+---@class SettingsDialog
 local SettingsDialog = {}
 
+---Opens the Settings dialog (child of the main Shifty dialog).
 function SettingsDialog.open()
     SETTINGS_DLG     = Dialog { title = "Settings", parent = SHIFTY_DLG }
     local low        = ColorUtils.getTemp(Settings.get("lowTemp"))
