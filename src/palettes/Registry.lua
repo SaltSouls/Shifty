@@ -50,8 +50,8 @@ Palettes.REGISTRY = defaultRegistry()
 
 Palettes.ORDER = {
     "SHADE",
-    "SATURATION",
     "LIGHTNESS",
+    "SATURATION",
     "HUE_SHIFT",
     "MIXED",
     "HUE_JUMP",
@@ -60,7 +60,7 @@ Palettes.ORDER = {
     "TETRADIC"
 }
 
-Palettes.BASE = { "SHADE", "SATURATION", "LIGHTNESS", "HUE_SHIFT", "MIXED" }
+Palettes.BASE = { "SHADE", "LIGHTNESS", "SATURATION", "HUE_SHIFT", "MIXED" }
 Palettes.EXTRA = { "HUE_JUMP", "COMPLEMENTARY", "TRIADIC", "TETRADIC" }
 
 function Palettes.newRegistry() return defaultRegistry() end

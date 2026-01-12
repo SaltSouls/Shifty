@@ -75,7 +75,7 @@ Settings.data = {
     tempPull     = { value = 20,   default = 20 },
     intensity    = { value = 25,   default = 25 },
     peak         = { value = 50,   default = 50 },
-    sway         = { value = 65,   default = 65 },
+    sway         = { value = 50,   default = 50 },
     saturation   = { value = 75,   default = 75 },
     lightness    = { value = 50,   default = 50 },
     slots        = { value = 7,    default = 7 },

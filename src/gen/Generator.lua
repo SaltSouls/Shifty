@@ -63,15 +63,15 @@ function Generator.generate(state)
 
         local proportion      = sway * factor
         local shadeColor      = Calculator.shade(baseColor, factor, direction, targetHue, proportion, intensity, peak)
-        local saturationColor = Calculator.shiftSaturation(baseColor, saturation * factor * direction)
         local lightnessColor  = Calculator.shiftLightness(baseColor, light * factor * direction)
+        local saturationColor = Calculator.shiftSaturation(baseColor, saturation * factor * direction)
         local hueShiftColor   = Calculator.shiftHue(baseColor, (((-(slotsMult / 2 - i) * constraints.hueShiftSpread) / slotsMult) * 2) / slotsMult)
         local hueJumpColor    = Calculator.shiftHue(baseColor, (((-(slotsMult / 2 - i) * constraints.hueJumpSpread)  / slotsMult) * 2) / slotsMult)
         local mixedColor      = Calculator.mix(fgColor, bgColor, (i - 1) / (slots - 1))
 
         Palettes.set(registry, "SHADE",      i, shadeColor)
-        Palettes.set(registry, "SATURATION", i, saturationColor)
         Palettes.set(registry, "LIGHTNESS",  i, lightnessColor)
+        Palettes.set(registry, "SATURATION", i, saturationColor)
         Palettes.set(registry, "HUE_SHIFT",  i, hueShiftColor)
         Palettes.set(registry, "MIXED",      i, mixedColor)
         Palettes.set(registry, "HUE_JUMP",   i, hueJumpColor)
@@ -80,8 +80,8 @@ function Generator.generate(state)
             Palettes.set(registry, "MIXED", i, fgColor)
         elseif i == math.floor(slotsMult / 2) then
             Palettes.set(registry, "SHADE",      i, baseColor)
-            Palettes.set(registry, "SATURATION", i, baseColor)
             Palettes.set(registry, "LIGHTNESS",  i, baseColor)
+            Palettes.set(registry, "SATURATION", i, baseColor)
             Palettes.set(registry, "HUE_SHIFT",  i, baseColor)
         elseif i == slots then
             Palettes.set(registry, "MIXED", i, bgColor)

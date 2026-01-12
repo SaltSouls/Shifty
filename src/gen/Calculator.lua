@@ -125,7 +125,7 @@ function Calculator.shade(baseColor, positionFactor, lightDirection, targetHue, 
     end
 
     local function computeSaturationBoost(color)
-        local sat = clamp(color.saturation or 100, 0, 100) / 100
+        local sat = clamp(color.saturation or 1, 0, 1)
         return lerp(0.7, 1.3, sat)
     end
 
