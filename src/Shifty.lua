@@ -107,6 +107,6 @@ function init(plugin)
     }
 end
 
----Aseprite exit hook (kept for completeness).
+---Aseprite exit hook.
 ---@param plugin Plugin
 function exit(plugin) end
