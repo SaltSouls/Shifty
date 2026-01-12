@@ -31,22 +31,20 @@ function SettingsDialog.open()
 
         -- Re-enable the settings button when the Settings dialog closes.
         local function enableSettings()
-            return function()
-                if not SETTINGS_DLG == dlg then return end
-                SETTINGS_DLG = nil
-                if not SHIFTY_DLG then return end
+            if not SETTINGS_DLG == dlg then return end
+            SETTINGS_DLG = nil
+            if not SHIFTY_DLG then return end
 
-                SHIFTY_DLG:modify {
-                    id = "settings",
-                    enabled = true
-                }
-            end
+            SHIFTY_DLG:modify {
+                id = "settings",
+                enabled = true
+            }
         end
 
         dlg = Dialog {
             title = "Settings",
             parent = SHIFTY_DLG,
-            onclose = enableSettings()
+            onclose = enableSettings
         }
 
         SETTINGS_DLG      = dlg
@@ -101,21 +99,21 @@ function SettingsDialog.open()
             :radio {
                 id = "-1",
                 label = "Pull:",
-                text = "left",
+                text = "Left",
                 selected = (pullDir == -1),
                 onclick = setPullDir(-1),
                 visible = Settings.get("autoTemp")
             }
             :radio {
                 id = "0",
-                text = "auto",
+                text = "Auto",
                 selected = (pullDir == 0),
                 onclick = setPullDir(0),
                 visible = Settings.get("autoTemp")
             }
             :radio {
                 id = "1",
-                text = "right",
+                text = "Right",
                 selected = (pullDir == 1),
                 onclick = setPullDir(1),
                 visible = Settings.get("autoTemp")

@@ -46,14 +46,17 @@ function ShiftyDialog.start()
         local fgListenerCode = app.events:on("fgcolorchange", onFGorBGChange(true))
         local bgListenerCode = app.events:on("bgcolorchange", onFGorBGChange(false))
 
-        local function disableListeners()
+        -- Ensure everything unregisters/closes upon app closure
+        local function cleanup()
             app.events:off(fgListenerCode)
             app.events:off(bgListenerCode)
+            if not SETTINGS_DLG then return end
+            SETTINGS_DLG:close()
         end
 
         dlg = Dialog {
             title = "Shifty",
-            onclose = disableListeners
+            onclose = cleanup
         }
 
         SHIFTY_DLG = dlg
