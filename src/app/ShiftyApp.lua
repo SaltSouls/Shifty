@@ -43,7 +43,7 @@ function ShiftyApp.rebuild(baseColor)
     if not baseColor then return end
     Settings.setCache("lastColor", baseColor)
 
-    local state = Settings.snapshot()
+    local state     = Settings.snapshot()
     state.baseColor = baseColor
 
     local autoLow, autoHigh = Temperature.compute(state, baseColor.hue, Calculator)

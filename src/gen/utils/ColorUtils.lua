@@ -70,6 +70,42 @@ function ColorUtils.getDistance(color1, color2)
     return (hue + sat + light)
 end
 
+-- Perceptual-ish distance using linear RGB + luminance.
+-- Returns ~0..2ish range (depends on colors).
+function ColorUtils.toLinear(c8)
+    local c = (c8 or 0) / 255
+    if c <= 0.04045 then return c / 12.92 end
+    return ((c + 0.055) / 1.055) ^ 2.4
+end
+
+function ColorUtils.luminance(color)
+    local r = ColorUtils.toLinear(color.red)
+    local g = ColorUtils.toLinear(color.green)
+    local b = ColorUtils.toLinear(color.blue)
+    -- Rec.709 / sRGB luminance
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+end
+
+function ColorUtils.linearRgbDistance(a, b)
+    local ar = ColorUtils.toLinear(a.red)
+    local ag = ColorUtils.toLinear(a.green)
+    local ab = ColorUtils.toLinear(a.blue)
+    local br = ColorUtils.toLinear(b.red)
+    local bg = ColorUtils.toLinear(b.green)
+    local bb = ColorUtils.toLinear(b.blue)
+    local dr = ar - br
+    local dg = ag - bg
+    local db = ab - bb
+    return math.sqrt(dr*dr + dg*dg + db*db)
+end
+
+function ColorUtils.visualDistance(a, b)
+    local lum = math.abs(ColorUtils.luminance(a) - ColorUtils.luminance(b))
+    local rgb = ColorUtils.linearRgbDistance(a, b)
+    -- Weighted so brightness separation matters more for ramps
+    return (lum * 1.6) + rgb
+end
+
 ---Returns a vivid swatch color for a given hue.
 ---@param hue number
 ---@return Color

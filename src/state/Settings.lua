@@ -1,4 +1,4 @@
-local Cache = Import("src/state/Cache.lua")
+local Cache     = Import("src/state/Cache.lua")
 
 ---@diagnostic disable: undefined-global
 
@@ -16,26 +16,6 @@ local Cache = Import("src/state/Cache.lua")
 ---@field value any
 ---@field default any
 
----@class ShiftySettingsSnapshot
----@field fgColor Color
----@field bgColor Color
----@field fgAlpha integer
----@field bgAlpha integer
----@field selected 'fg'|'bg'
----@field baseColor Color
----@field slots integer
----@field autoTemp boolean
----@field lowTemp number
----@field highTemp number
----@field autoLowTemp number
----@field autoHighTemp number
----@field tempPull number
----@field intensity number
----@field peak number
----@field sway number
----@field saturation number
----@field lightness number
-
 ---@class Settings
 ---@field maxHue number
 ---@field data table<string, ShiftySettingEntry>|{defaultable:string[]}
@@ -48,11 +28,11 @@ local Cache = Import("src/state/Cache.lua")
 ---@field getEffectiveTemp fun(id:'lowTemp'|'highTemp'):number
 ---@field ensureValue fun(id:string):any
 ---@field snapshot fun():ShiftySettingsSnapshot
-local Settings = {}
+local Settings  = {}
 
 Settings.maxHue = 360
 
-Settings.data = {
+Settings.data   = {
     defaultable = {
         "lowTemp",
         "highTemp",
@@ -68,18 +48,19 @@ Settings.data = {
     dropper      = { value = true, default = true },
     autoPick     = { value = true, default = true },
     autoTemp     = { value = true, default = true },
-    lowTemp      = { value = 215,  default = 215 },
-    autoLowTemp  = { value = 215,  default = 215 },
-    highTemp     = { value = 50,   default = 50 },
-    autoHighTemp = { value = 50,   default = 50 },
-    tempPull     = { value = 20,   default = 20 },
-    intensity    = { value = 25,   default = 25 },
-    peak         = { value = 50,   default = 50 },
-    sway         = { value = 50,   default = 50 },
-    saturation   = { value = 75,   default = 75 },
-    lightness    = { value = 50,   default = 50 },
-    slots        = { value = 7,    default = 7 },
-    updateDelay  = { value = 75,   default = 75 }
+    lowTemp      = { value = 215, default = 215 },
+    autoLowTemp  = { value = 215, default = 215 },
+    highTemp     = { value = 50, default = 50 },
+    autoHighTemp = { value = 50, default = 50 },
+    pullDir      = { value = 0, default = 0 },
+    tempPull     = { value = 20, default = 20 },
+    intensity    = { value = 25, default = 25 },
+    peak         = { value = 50, default = 50 },
+    sway         = { value = 50, default = 50 },
+    saturation   = { value = 75, default = 75 },
+    lightness    = { value = 50, default = 50 },
+    slots        = { value = 7, default = 7 },
+    updateDelay  = { value = 25, default = 25 }
 }
 
 function Settings.getCache(id) return Cache.get(id) end
@@ -108,30 +89,32 @@ local function isNumber(v) return type(v) == "number" end
 local function isBoolean(v) return type(v) == "boolean" end
 local function inRange(v, min, max) return isNumber(v) and v >= min and v <= max end
 local function oneOf(v, ...)
-    for i = 1, select("#", ...) do if v == select(i, ...) then return true end end
+    for i = 1, select("#", ...) do
+        if v == select(i, ...) then return true end end
     return false
 end
 
 local validators = {
-    dropper  = isBoolean,
-    autoPick = isBoolean,
-    autoTemp = isBoolean,
+    dropper      = isBoolean,
+    autoPick     = isBoolean,
+    autoTemp     = isBoolean,
 
     lowTemp      = function(v) return inRange(v, 0, Settings.maxHue) end,
     highTemp     = function(v) return inRange(v, 0, Settings.maxHue) end,
     autoLowTemp  = function(v) return inRange(v, 0, Settings.maxHue) end,
     autoHighTemp = function(v) return inRange(v, 0, Settings.maxHue) end,
 
-    tempPull = function(v) return inRange(v, 1, 360) end,
+    pullDir      = function(v) return oneOf(v, -1, 0, 1) end,
+    tempPull     = function(v) return inRange(v, 1, 360) end,
 
-    intensity  = function(v) return inRange(v, 1, 100) end,
-    peak       = function(v) return inRange(v, 1, 100) end,
-    sway       = function(v) return inRange(v, 1, 100) end,
-    saturation = function(v) return inRange(v, 1, 100) end,
-    lightness  = function(v) return inRange(v, 1, 100) end,
+    intensity    = function(v) return inRange(v, 1, 100) end,
+    peak         = function(v) return inRange(v, 1, 100) end,
+    sway         = function(v) return inRange(v, 1, 100) end,
+    saturation   = function(v) return inRange(v, 1, 100) end,
+    lightness    = function(v) return inRange(v, 1, 100) end,
 
-    slots       = function(v) return oneOf(v, 7, 9, 11, 15) end,
-    updateDelay = function(v) return inRange(v, 0, 250) end,
+    slots        = function(v) return oneOf(v, 7, 9, 11, 15) end,
+    updateDelay  = function(v) return inRange(v, 0, 250) end,
 }
 
 ---Checks whether a value is valid for the given setting id.
@@ -148,6 +131,7 @@ function Settings.ensureValue(id)
     local value = Settings.get(id)
     if value ~= nil and isValid(id, value) then return value end
     local default = Settings.getDefault(id)
+
     Settings.set(id, default)
     return default
 end
@@ -160,20 +144,40 @@ end
 ---
 ---The generator uses a snapshot so it doesn't have to read from Settings/Cache
 ---multiple times while values are changing (slider drags, auto-pick, etc.).
+---@class ShiftySettingsSnapshot
+---@field fgColor Color
+---@field bgColor Color
+---@field fgAlpha integer
+---@field bgAlpha integer
+---@field selected 'fg'|'bg'
+---@field baseColor Color
+---@field slots integer
+---@field autoTemp boolean
+---@field lowTemp number
+---@field highTemp number
+---@field autoLowTemp number
+---@field autoHighTemp number
+---@field pullDir number
+---@field tempPull number
+---@field intensity number
+---@field peak number
+---@field sway number
+---@field saturation number
+---@field lightness number
 ---@return ShiftySettingsSnapshot
 function Settings.snapshot()
-    local selected = Settings.getCache("selected")
-    local fgColor  = Settings.getCache("fgColor")
-    local bgColor  = Settings.getCache("bgColor")
-    local base     = Settings.getCache(selected == "bg" and "bgColor" or "fgColor")
+    local selected   = Settings.getCache("selected")
+    local fgColor    = Settings.getCache("fgColor")
+    local bgColor    = Settings.getCache("bgColor")
+    local base       = Settings.getBaseColor()
 
     return {
-        fgColor   = fgColor,
-        bgColor   = bgColor,
-        fgAlpha   = Settings.getCache("fgAlpha"),
-        bgAlpha   = Settings.getCache("bgAlpha"),
-        selected  = selected,
-        baseColor = base,
+        fgColor      = fgColor,
+        bgColor      = bgColor,
+        fgAlpha      = Settings.getCache("fgAlpha"),
+        bgAlpha      = Settings.getCache("bgAlpha"),
+        selected     = selected,
+        baseColor    = base,
 
         slots        = Settings.ensureValue("slots"),
         autoTemp     = Settings.ensureValue("autoTemp"),
@@ -181,6 +185,7 @@ function Settings.snapshot()
         highTemp     = Settings.ensureValue("highTemp"),
         autoLowTemp  = Settings.ensureValue("autoLowTemp"),
         autoHighTemp = Settings.ensureValue("autoHighTemp"),
+        pullDir      = Settings.ensureValue("pullDir"),
         tempPull     = Settings.ensureValue("tempPull"),
         intensity    = Settings.ensureValue("intensity"),
         peak         = Settings.ensureValue("peak"),

@@ -13,13 +13,13 @@ local ColorUtils = Import("src/gen/utils/ColorUtils.lua")
 --------------------------------------------------------------------------------
 
 ---@class Calculator
-local Calculator = {}
+local Calculator     = {}
 
-local maxHue            = Settings.maxHue
-local clamp             = ColorUtils.clamp
-local lerp              = ColorUtils.lerp
-local getAbsDistance    = ColorUtils.getAbsDistance
-local getDistance       = ColorUtils.getDistance
+local maxHue         = Settings.maxHue
+local clamp          = ColorUtils.clamp
+local lerp           = ColorUtils.lerp
+local getAbsDistance = ColorUtils.getAbsDistance
+local getDistance    = ColorUtils.getDistance
 
 --------------------------------------------------------------------------------
 -- HSL Shifts
@@ -81,9 +81,9 @@ end
 ---@return Color
 function Calculator.mix(color1, color2, mixProportion)
     return Color {
-        red   = clamp(lerp(color1.red, color2.red, mixProportion), 0, 255),
+        red = clamp(lerp(color1.red, color2.red, mixProportion), 0, 255),
         green = clamp(lerp(color1.green, color2.green, mixProportion), 0, 255),
-        blue  = clamp(lerp(color1.blue, color2.blue, mixProportion), 0, 255)
+        blue = clamp(lerp(color1.blue, color2.blue, mixProportion), 0, 255)
     }
 end
 
@@ -92,13 +92,12 @@ end
 --------------------------------------------------------------------------------
 
 local function adjustLight(color, shifted)
-    local distance = getDistance(color, shifted)
-    local lowShift  = 0.1
-    local highShift = 0.5
-
+    local lowShift   = 0.3
+    local highShift  = 0.7
+    local distance   = getDistance(color, shifted)
     local normalized = clamp(distance / 100, 0, 1)
-    local t = 1 - normalized
-    t = t * t
+    local t          = 1 - normalized
+    t                = t * t
 
     return lerp(lowShift, highShift, t)
 end
@@ -129,21 +128,19 @@ function Calculator.shade(baseColor, positionFactor, lightDirection, targetHue, 
         return lerp(0.7, 1.3, sat)
     end
 
-    local intensityScale   = computeIntensityScale(tempIntensity)
-    local saturationBoost  = computeSaturationBoost(baseColor)
-    local shadeIntensity   = intensityScale * saturationBoost * positionFactor
-    local peakOffset       = (tempPeak * 2 - 1) * positionFactor * lightDirection
+    local intensityScale  = computeIntensityScale(tempIntensity)
+    local saturationBoost = computeSaturationBoost(baseColor)
+    local shadeIntensity  = intensityScale * saturationBoost * positionFactor
+    local peakOffset      = (tempPeak * 2 - 1) * positionFactor * lightDirection
 
-    local shiftedColor = shiftHSL(baseColor, targetHue, shadeIntensity, peakOffset)
-    shiftedColor.hue   = targetHue
+    local shiftedColor    = shiftHSL(baseColor, targetHue, shadeIntensity, peakOffset)
+    shiftedColor.hue      = targetHue
 
     local lightAdjustment = adjustLight(baseColor, shiftedColor)
 
-    local mixedColor = mixColors(baseColor, shiftedColor, mixProportion)
+    local mixedColor      = mixColors(baseColor, shiftedColor, mixProportion)
     return shiftLightness(mixedColor, lightAdjustment * positionFactor * lightDirection)
 end
-
-local function wrapHue(hue) return (hue % maxHue + maxHue) % maxHue end
 
 --------------------------------------------------------------------------------
 -- Temperature Pull
@@ -153,16 +150,19 @@ local function wrapHue(hue) return (hue % maxHue + maxHue) % maxHue end
 -- toward the current base hue. This keeps shading consistent when the user
 -- picks a new base color.
 
-local function getHueDistance(hue, target)
-    hue = wrapHue(hue)
-    target = wrapHue(target)
+local function wrapHue(hue) return (hue % maxHue)
+end
 
+local function getHueDistance(hue, target)
+    hue        = wrapHue(hue)
+    target     = wrapHue(target)
     local diff = getAbsDistance(target, hue)
+
     return math.min(diff, maxHue - diff)
 end
 
 local function getHueDirection(hue, target)
-    hue = wrapHue(hue)
+    hue    = wrapHue(hue)
     target = wrapHue(target)
 
     if hue == target then return 0 end
@@ -170,23 +170,23 @@ local function getHueDirection(hue, target)
     return (up <= maxHue / 2) and 1 or -1
 end
 
-local function stepHue(hue, target, step)
-    hue = wrapHue(hue)
-    target = wrapHue(target)
-    local minStep = step
-    local dir = getHueDirection(hue, target)
+local function stepHue(hue, target, step, dir)
+    hue            = wrapHue(hue)
+    target         = wrapHue(target)
+    if dir == 0 then dir = getHueDirection(hue, target) end
+    local minStep  = step
     local distance = getHueDistance(hue, target)
 
     if distance == 0 then return hue end
     if distance <= minStep then return target end
 
-    local maxStep = step * 6
+    local maxStep   = step * 6
     local easeRange = step * 8
-    local t = math.min(distance / easeRange, 1)
-    local eased = t * t
+    local t         = math.min(distance / easeRange, 1)
+    local eased     = t * t
 
-    local move = minStep + ((maxStep - minStep) * eased)
-    move = math.min(move, distance)
+    local move      = minStep + ((maxStep - minStep) * eased)
+    move            = math.min(move, distance)
     return wrapHue(hue + (move * dir))
 end
 
@@ -199,12 +199,13 @@ end
 ---@param anchor number Target/anchor hue.
 ---@param step number Base step size (higher = stronger pull).
 ---@return number newHue
-function Calculator.temp(hue, anchor, step)
-    hue = tonumber(hue) or 0
+function Calculator.temp(hue, anchor, step, dir)
+    hue    = tonumber(hue) or 0
     anchor = tonumber(anchor) or 0
-    step = tonumber(step) or 0
+    step   = tonumber(step) or 0
+    dir    = tonumber(dir) or 0
 
-    return stepHue(hue, anchor, step)
+    return stepHue(hue, anchor, step, dir)
 end
 
 return Calculator

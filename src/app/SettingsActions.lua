@@ -13,7 +13,8 @@ local ShiftyApp  = Import("src/app/ShiftyApp.lua")
 
 ---@class SettingsActions
 local SettingsActions = {}
-local getTemp = ColorUtils.getTemp
+
+local getTemp         = ColorUtils.getTemp
 
 --------------------------------------------------------------------------------
 -- Toggle / Slider / Color Pickers
@@ -29,8 +30,11 @@ function SettingsActions.toggle(id)
 
         if id == "autoTemp" and SETTINGS_DLG then
             local enabled = Settings.get("autoTemp")
-            SETTINGS_DLG:modify { id = "autoLowTemp",  visible = enabled }
+            SETTINGS_DLG:modify { id = "autoLowTemp", visible = enabled }
             SETTINGS_DLG:modify { id = "autoHighTemp", visible = enabled }
+            SETTINGS_DLG:modify { id = "-1", visible = enabled }
+            SETTINGS_DLG:modify { id = "0", visible = enabled }
+            SETTINGS_DLG:modify { id = "1", visible = enabled }
         end
 
         ShiftyApp.requestRebuild(Settings.getBaseColor())
@@ -50,13 +54,14 @@ function SettingsActions.setNumber(id)
     end
 end
 
----Updates debouncer delay for rebuild requests.
-function SettingsActions.setUpdateDelay()
-    if not SETTINGS_DLG then return end
-    local value = SETTINGS_DLG.data.updateDelay
-
-    Settings.set("updateDelay", value)
-    ShiftyApp.setSchedulerDelay(value)
+---Sets the auto temp pull direction (radio group).
+---@param n integer
+---@return fun()
+function SettingsActions.setPullDir(n)
+    return function()
+        Settings.set("pullDir", n)
+        ShiftyApp.requestRebuild(Settings.getBaseColor())
+    end
 end
 
 ---Sets the swatch count per palette (radio group).
@@ -67,6 +72,15 @@ function SettingsActions.setSlots(n)
         Settings.set("slots", n)
         ShiftyApp.requestRebuild(Settings.getBaseColor())
     end
+end
+
+---Updates debouncer delay for rebuild requests.
+function SettingsActions.setUpdateDelay()
+    if not SETTINGS_DLG then return end
+    local value = SETTINGS_DLG.data.updateDelay
+
+    Settings.set("updateDelay", value)
+    ShiftyApp.setSchedulerDelay(value)
 end
 
 ---Handles temperature color pickers.
@@ -99,16 +113,18 @@ end
 local function syncSetting(id)
     -- Keeps UI controls in sync when we programmatically change setting values.
     if not SETTINGS_DLG then return end
-    local isTemp      = (id == "lowTemp" or id == "highTemp")
-    local isAutoTemp  = (id == "autoLowTemp" or id == "autoHighTemp")
-    local isSlots     = (id == "slots")
+    local isTemp     = (id == "lowTemp" or id == "highTemp")
+    local isAutoTemp = (id == "autoLowTemp" or id == "autoHighTemp")
+    local isSlots    = (id == "slots")
 
     if isTemp or isAutoTemp then
         SETTINGS_DLG:modify { id = id, color = getTemp(Settings.get(id)) }
     elseif isSlots then
         local radioId = tostring(Settings.get("slots"))
         SETTINGS_DLG:modify { id = radioId, selected = true }
-    else SETTINGS_DLG:modify { id = id, value = Settings.get(id) } end
+    else
+        SETTINGS_DLG:modify { id = id, value = Settings.get(id) }
+    end
 end
 
 --------------------------------------------------------------------------------

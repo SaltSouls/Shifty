@@ -16,11 +16,14 @@ local Scheduler = {}
 ---@param delaySeconds number
 ---@param fn fun(...:any)
 ---@return fun(...:any)
+---@public
 function Scheduler.create(delaySeconds, fn)
     delaySeconds = tonumber(delaySeconds) or 0
-    if delaySeconds <= 0 then return function(...) return fn(...) end end
+    if delaySeconds <= 0 then return function(...)
+        return fn(...) end
+    end
 
-    local timer = nil
+    local timer       = nil
     local pendingArgs = nil
 
     return function(...)
@@ -34,7 +37,7 @@ function Scheduler.create(delaySeconds, fn)
         timer = Timer {
             interval = delaySeconds,
             ontick = function()
-                local args = pendingArgs
+                local args  = pendingArgs
                 pendingArgs = nil
                 if timer then timer:stop() end
                 timer = nil

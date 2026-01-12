@@ -23,10 +23,11 @@ local Actions = {}
 --------------------------------------------------------------------------------
 
 local function updateColor(cacheKey, color)
-    local isFg = cacheKey == "fgColor"
+    local isFg  = cacheKey == "fgColor"
     local alpha = Settings.getCache(isFg and "fgAlpha" or "bgAlpha")
     if isFg then Apply.fgColor(color, alpha)
     else Apply.bgColor(color, alpha) end
+
     Settings.setCache(cacheKey, color)
     Render.refreshMain()
 end
@@ -77,12 +78,13 @@ end
 ---@param ev ShiftySwatchEvent
 function Actions.onBaseSwatchClick(ev)
     local color = ev.color
-    if not color then return end
+    if not color then
+        return
+    end
 
     local fg = Settings.getCache("fgColor")
     if ColorUtils.isSameColor(color, fg) then Settings.setCache("selected", "fg")
-    else Settings.setCache("selected", "bg")
-    end
+    else Settings.setCache("selected", "bg") end
 
     Settings.setCache("lastColor", color)
     ShiftyApp.requestRebuild(color)

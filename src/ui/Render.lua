@@ -32,7 +32,7 @@ end
 ---Refreshes the "Display" temp colors in the Settings dialog.
 function Render.refreshAutoTemps()
     if not SETTINGS_DLG or not Settings.get("autoTemp") then return end
-    SETTINGS_DLG:modify { id = "autoLowTemp",  color = getTemp(Settings.get("autoLowTemp")) }
+    SETTINGS_DLG:modify { id = "autoLowTemp", color = getTemp(Settings.get("autoLowTemp")) }
     SETTINGS_DLG:modify { id = "autoHighTemp", color = getTemp(Settings.get("autoHighTemp")) }
 end
 

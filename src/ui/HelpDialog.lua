@@ -40,6 +40,7 @@ function HelpDlg.show()
             "- Auto Pick: Automatically updates palettes when FG/BG changes.",
             "- Auto Temp: Automatically adjusts warm/cool hues based on base color.",
             "- Cool/Warm Temps: Set hues for dark/light shade shifts.",
+            "- Pull (left/auto/right): Sets direction to pull hue in when using auto temp.",
             "- Intensity (1-100): Controls saturation gradient in shades.",
             "- Peak (1-100): Adjusts brightness of lightest shades.",
             "- Sway (1-100): Sets strength of temperature-based hue shifts.",
@@ -47,8 +48,7 @@ function HelpDlg.show()
             "- Light (1-100): Adjusts intensity of lightness gradient.",
             "- Slots (7/9/11/15): Number of swatches generated per palette.",
             "- Update Delay (ms): Delay before regenerating palettes when sliders change.",
-            "   (Higher Update Delay values reduce CPU usage while tweaking sliders.)",
-            ""
+            "   (Higher Update Delay values reduce CPU usage while tweaking sliders.)"
         }
     }
 end

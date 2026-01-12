@@ -22,12 +22,12 @@ local Cache = {}
 local cache
 
 cache = {
-    fgColor   = app.fgColor,
-    fgAlpha   = app.fgColor.alpha,
-    bgColor   = app.bgColor,
-    bgAlpha   = app.bgColor.alpha,
+    fgColor = app.fgColor,
+    fgAlpha = app.fgColor.alpha,
+    bgColor = app.bgColor,
+    bgAlpha = app.bgColor.alpha,
     lastColor = app.fgColor,
-    selected  = "fg"
+    selected = "fg"
 }
 
 ---Gets a cached value.

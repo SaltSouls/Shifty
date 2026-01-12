@@ -16,10 +16,11 @@ local Temperature = {}
 function Temperature.compute(state, hue, Calculator)
     if not state or not state.autoTemp then return nil, nil end
     if not hue or not Calculator or not Calculator.temp then return nil, nil end
-    local step = state.tempPull
 
-    local autoLowHue  = Calculator.temp(hue, state.lowTemp, step)
-    local autoHighHue = Calculator.temp(hue, state.highTemp, step)
+    local dir         = state.pullDir
+    local step        = state.tempPull
+    local autoLowHue  = Calculator.temp(hue, state.lowTemp, step, dir)
+    local autoHighHue = Calculator.temp(hue, state.highTemp, step, dir)
     return autoLowHue, autoHighHue
 end
 

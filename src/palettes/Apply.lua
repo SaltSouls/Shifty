@@ -1,4 +1,4 @@
-local ColorUtils = Import("src/gen/utils/ColorUtils.lua")
+local ColorUtils  = Import("src/gen/utils/ColorUtils.lua")
 
 local createColor = ColorUtils.createColor
 
@@ -17,6 +17,7 @@ local Apply = {}
 ---@param color Color|table
 ---@param alpha? integer
 function Apply.fgColor(color, alpha) app.fgColor = createColor(color, alpha) end
+
 ---Sets the current background color.
 ---@param color Color|table
 ---@param alpha? integer

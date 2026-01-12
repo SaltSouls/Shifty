@@ -1,6 +1,4 @@
-local ColorUtils = Import("src/gen/utils/ColorUtils.lua")
-
-local createColor = ColorUtils.createColor
+local ColorUtils  = Import("src/gen/utils/ColorUtils.lua")
 
 ---@diagnostic disable: undefined-global
 
@@ -30,7 +28,9 @@ local createColor = ColorUtils.createColor
 ---@field get fun(id:PaletteId):Color[]
 ---@field set fun(registry:table<PaletteId, Color[]>, id:PaletteId, index:integer, color:Color|table)
 ---@field replace fun(registry:table<PaletteId, Color[]>)
-local Palettes = {}
+local Palettes    = {}
+
+local createColor = ColorUtils.createColor
 
 local function defaultRegistry()
     return {
@@ -60,7 +60,7 @@ Palettes.ORDER = {
     "TETRADIC"
 }
 
-Palettes.BASE = { "SHADE", "LIGHTNESS", "SATURATION", "HUE_SHIFT", "MIXED" }
+Palettes.BASE  = { "SHADE", "LIGHTNESS", "SATURATION", "HUE_SHIFT", "MIXED" }
 Palettes.EXTRA = { "HUE_JUMP", "COMPLEMENTARY", "TRIADIC", "TETRADIC" }
 
 function Palettes.newRegistry() return defaultRegistry() end
