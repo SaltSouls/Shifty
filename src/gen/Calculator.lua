@@ -150,8 +150,7 @@ end
 -- toward the current base hue. This keeps shading consistent when the user
 -- picks a new base color.
 
-local function wrapHue(hue) return (hue % maxHue)
-end
+local function wrapHue(hue) return (hue % maxHue) end
 
 local function getHueDistance(hue, target)
     hue        = wrapHue(hue)
@@ -189,10 +188,6 @@ local function stepHue(hue, target, step, dir)
     move            = math.min(move, distance)
     return wrapHue(hue + (move * dir))
 end
-
---------------------------------------------------------------------------------
--- Temperature Pull
---------------------------------------------------------------------------------
 
 ---Moves `hue` towards `anchor` by a variable step.
 ---@param hue number Current hue.

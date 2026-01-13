@@ -55,7 +55,7 @@ function ShiftyDialog.start()
         end
 
         dlg = Dialog {
-            title = "Shifty",
+            title   = "Shifty",
             onclose = cleanup
         }
 
@@ -63,34 +63,34 @@ function ShiftyDialog.start()
         SHIFTY_DLG
             :separator { text = "Base Colors:" }
             :shades {
-                id = "base",
-                colors = { fgColor, bgColor },
+                id      = "base",
+                colors  = { fgColor, bgColor },
                 onclick = onBaseSwatchClick
             }
             :button {
-                id = "get",
-                text = "&Get",
+                id      = "get",
+                text    = "&Get",
                 onclick = onGetClick
             }
             :tab {
-                id = "basePalettes",
-                text = "Base Palettes"
+                id      = "basePalettes",
+                text    = "Base Palettes"
             }
 
         addPaletteRows(SHIFTY_DLG, Palettes.BASE)
 
         SHIFTY_DLG
             :tab {
-                id = "extraPalettes",
-                text = "Extra Palettes"
+                id      = "extraPalettes",
+                text    = "Extra Palettes"
             }
 
         addPaletteRows(SHIFTY_DLG, Palettes.EXTRA)
 
         SHIFTY_DLG:endtabs {}
             :button {
-                id = "settings",
-                text = "&Settings",
+                id      = "settings",
+                text    = "&Settings",
                 onclick = SettingsDialog.open
             }
             :separator { text = "version: " .. SHIFTY_VERSION }
@@ -101,7 +101,10 @@ function ShiftyDialog.start()
         SHIFTY_DLG.bounds = Rectangle { bounds.x, bounds.y, 176, bounds.height }
     end)
 
-    if not success then app.alert { title = "Error", text = "Failed to create dialog: " .. tostring(err) } end
+    if not success then app.alert {
+        title = "Error",
+        text  = "Failed to create dialog: " .. tostring(err)
+    } end
 end
 
 return ShiftyDialog

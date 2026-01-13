@@ -23,8 +23,9 @@ local ShiftyApp = {}
 
 local requestRebuild
 
----Builds a rebuild function that optionally debounces based on `updateDelay`.
+---Builds a rebuild function that schedules tasks based on `updateDelay`.
 ---
+---When delayed, previous tasks will be overwritten by current incoming tasks.
 ---When delay is > 0 we wrap rebuild in a scheduler that resets its timer on each
 ---call (slider drag friendly).
 ---@return fun(baseColor?: Color)
@@ -61,11 +62,12 @@ function ShiftyApp.rebuild(baseColor)
     Render.refreshMain()
 end
 
----Recomputes the debounced rebuild function after the delay setting changes.
+---Recomputes the current tasks after the delay setting changes.
 ---@param _ number The delay in ms (unused; read from settings).
 function ShiftyApp.setSchedulerDelay(_) requestRebuild = rebuildRequestFn() end
 
----Requests a rebuild, optionally debounced by the current `updateDelay`.
+---Requests a rebuild.
+---When delayed, creates a scheduler and uses only the most recent tasks.
 ---@param baseColor? Color
 function ShiftyApp.requestRebuild(baseColor) requestRebuild(baseColor) end
 

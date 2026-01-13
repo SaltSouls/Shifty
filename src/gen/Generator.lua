@@ -22,11 +22,9 @@ local getAsPercent = ColorUtils.getAsPercent
 ---@field hueShiftSpread number
 ---@field hueJumpSpread number
 ---@type GeneratorConstraints
-local constraints  = {
-    -- Smaller spread for subtle hue shifts.
-    hueShiftSpread = 0.75,
-    -- Larger spread for more dramatic "jump".
-    hueJumpSpread = 3.0
+local constraints = {
+    hueShiftSpread = 0.75, -- Smaller spread for subtle hue shifts.
+    hueJumpSpread  = 3.0   -- Larger spread for more dramatic "jump".
 }
 
 ---Generates all palette groups into a fresh registry.

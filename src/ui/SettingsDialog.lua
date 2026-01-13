@@ -14,12 +14,12 @@ local HelpDialog      = Import("src/ui/HelpDialog.lua")
 ---@class SettingsDialog
 local SettingsDialog  = {}
 
-local toggle          = SettingsActions.toggle
-local setTempHue      = SettingsActions.setTempHue
-local setNumber       = SettingsActions.setNumber
-local setPullDir      = SettingsActions.setPullDir
-local setSlots        = SettingsActions.setSlots
-local setUpdateDelay  = SettingsActions.setUpdateDelay
+local toggle         = SettingsActions.toggle
+local setTempHue     = SettingsActions.setTempHue
+local setNumber      = SettingsActions.setNumber
+local setPullDir     = SettingsActions.setPullDir
+local setSlots       = SettingsActions.setSlots
+local setUpdateDelay = SettingsActions.setUpdateDelay
 
 ---Opens the Settings dialog (child of the main Shifty dialog).
 function SettingsDialog.open()
@@ -36,14 +36,14 @@ function SettingsDialog.open()
             if not SHIFTY_DLG then return end
 
             SHIFTY_DLG:modify {
-                id = "settings",
+                id      = "settings",
                 enabled = true
             }
         end
 
         dlg = Dialog {
-            title = "Settings",
-            parent = SHIFTY_DLG,
+            title   = "Settings",
+            parent  = SHIFTY_DLG,
             onclose = enableSettings
         }
 
@@ -58,155 +58,158 @@ function SettingsDialog.open()
 
         SETTINGS_DLG
             :check {
-                id = "autoPick",
-                text = "Auto Pick",
+                id       = "autoPick",
+                text     = "Auto Pick",
                 selected = Settings.get("autoPick"),
-                onclick = toggle("autoPick")
+                onclick  = toggle("autoPick")
             }
             :check {
-                id = "autoTemp",
-                text = "Auto Temp",
+                id       = "autoTemp",
+                text     = "Auto Temp",
                 selected = Settings.get("autoTemp"),
-                onclick = toggle("autoTemp")
+                onclick  = toggle("autoTemp")
             }
             :separator { text = "Shade Settings:" }
             :label     { text = "Cool" }
             :label     { text = "Warm" }
             :color {
-                id = "lowTemp",
-                label = "Temps:",
-                color = low,
+                id       = "lowTemp",
+                label    = "Temps:",
+                color    = low,
                 onchange = setTempHue("lowTemp")
             }
             :color {
-                id = "highTemp",
-                color = high,
+                id       = "highTemp",
+                color    = high,
                 onchange = setTempHue("highTemp")
             }:newrow()
             :color {
-                id = "autoLowTemp",
-                label = "Display:",
-                color = autoLow,
-                enabled = false,
-                visible = Settings.get("autoTemp")
+                id       = "autoLowTemp",
+                label    = "Display:",
+                color    = autoLow,
+                enabled  = false,
+                visible  = Settings.get("autoTemp")
             }
             :color {
-                id = "autoHighTemp",
-                color = autoHigh,
-                enabled = false,
-                visible = Settings.get("autoTemp")
+                id       = "autoHighTemp",
+                color    = autoHigh,
+                enabled  = false,
+                visible  = Settings.get("autoTemp")
             }
             :radio {
-                id = "-1",
-                label = "Pull:",
-                text = "Left",
+                id       = "-1",
+                label    = "Pull:",
+                text     = "Left",
                 selected = (pullDir == -1),
-                onclick = setPullDir(-1),
-                visible = Settings.get("autoTemp")
+                onclick  = setPullDir(-1),
+                visible  = Settings.get("autoTemp")
             }
             :radio {
-                id = "0",
-                text = "Auto",
+                id       = "0",
+                text     = "Auto",
                 selected = (pullDir == 0),
-                onclick = setPullDir(0),
-                visible = Settings.get("autoTemp")
+                onclick  = setPullDir(0),
+                visible  = Settings.get("autoTemp")
             }
             :radio {
-                id = "1",
-                text = "Right",
+                id       = "1",
+                text     = "Right",
                 selected = (pullDir == 1),
-                onclick = setPullDir(1),
-                visible = Settings.get("autoTemp")
+                onclick  = setPullDir(1),
+                visible  = Settings.get("autoTemp")
             }
             :separator {}
             :slider {
-                id = "intensity",
-                label = "Intensity:",
-                min = 1,
-                max = 100,
-                value = Settings.get("intensity"),
+                id       = "intensity",
+                label    = "Intensity:",
+                min      = 1,
+                max      = 100,
+                value    = Settings.get("intensity"),
                 onchange = setNumber("intensity")
             }
             :slider {
-                id = "peak",
-                label = "Peak:",
-                min = 1,
-                max = 100,
-                value = Settings.get("peak"),
+                id       = "peak",
+                label    = "Peak:",
+                min      = 1,
+                max      = 100,
+                value    = Settings.get("peak"),
                 onchange = setNumber("peak")
             }
             :slider {
-                id = "sway",
-                label = "Sway:",
-                min = 1,
-                max = 100,
-                value = Settings.get("sway"),
+                id       = "sway",
+                label    = "Sway:",
+                min      = 1,
+                max      = 100,
+                value    = Settings.get("sway"),
                 onchange = setNumber("sway")
             }
             :separator { text = "Other Settings:" }
             :slider {
-                id = "lightness",
-                label = "Light:",
-                min = 1,
-                max = 100,
-                value = Settings.get("lightness"),
+                id       = "lightness",
+                label    = "Light:",
+                min      = 1,
+                max      = 100,
+                value    = Settings.get("lightness"),
                 onchange = setNumber("lightness")
             }
             :slider {
-                id = "saturation",
-                label = "Saturation:",
-                min = 1,
-                max = 100,
-                value = Settings.get("saturation"),
+                id       = "saturation",
+                label    = "Saturation:",
+                min      = 1,
+                max      = 100,
+                value    = Settings.get("saturation"),
                 onchange = setNumber("saturation")
             }
             :separator { text = "UI Settings:" }
             :radio {
-                id = "7",
-                label = "Slots:",
-                text = "7",
+                id       = "7",
+                label    = "Slots:",
+                text     = "7",
                 selected = (slotsValue == 7),
-                onclick = setSlots(7)
+                onclick  = setSlots(7)
             }
             :radio {
-                id = "9",
-                text = "9",
+                id       = "9",
+                text     = "9",
                 selected = (slotsValue == 9),
-                onclick = setSlots(9)
+                onclick  = setSlots(9)
             }
             :radio {
-                id = "11",
-                text = "11",
+                id       = "11",
+                text     = "11",
                 selected = (slotsValue == 11),
-                onclick = setSlots(11)
+                onclick  = setSlots(11)
             }
             :radio {
-                id = "15",
-                text = "15",
+                id       = "15",
+                text     = "15",
                 selected = (slotsValue == 15),
-                onclick = setSlots(15)
+                onclick  = setSlots(15)
             }
             :slider {
-                id = "updateDelay",
-                label = "Update Delay (ms):",
-                min = 0,
-                max = 250,
-                value = updateDelay,
+                id       = "updateDelay",
+                label    = "Update Delay (ms):",
+                min      = 0,
+                max      = 250,
+                value    = updateDelay,
                 onchange = setUpdateDelay
             }
             :separator {}
             :button {
-                text = "&Reset",
-                onclick = SettingsActions.resetDefaults
+                text     = "&Reset",
+                onclick  = SettingsActions.resetDefaults
             }
             :button {
-                text = "&Help",
-                onclick = HelpDialog.show
+                text     = "&Help",
+                onclick  = HelpDialog.show
             }
             :show { wait = false }
     end)
 
-    if not success then app.alert { title = "Error", text = "Failed to create dialog: " .. tostring(err) } end
+    if not success then app.alert {
+        title = "Error",
+        text  = "Failed to create dialog: " .. tostring(err)
+    } end
 end
 
 return SettingsDialog

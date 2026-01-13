@@ -40,7 +40,6 @@ end
 -- Event Handlers
 --------------------------------------------------------------------------------
 
-
 ---Palette swatch click handler.
 ---
 ---Mouse buttons:

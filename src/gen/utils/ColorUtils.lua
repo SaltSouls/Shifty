@@ -52,9 +52,9 @@ end
 ---@param color2 Color
 ---@return boolean
 function ColorUtils.isSameColor(color1, color2)
-    return color1.hue == color2.hue and
+    return color1.hue        == color2.hue and
            color1.saturation == color2.saturation and
-           color1.lightness == color2.lightness
+           color1.lightness  == color2.lightness
 end
 
 ---Simple "distance" across hue/sat/light components.

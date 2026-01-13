@@ -31,23 +31,23 @@ function SettingsActions.toggle(id)
         if id == "autoTemp" and SETTINGS_DLG then
             local enabled = Settings.get("autoTemp")
             SETTINGS_DLG:modify {
-                id = "autoLowTemp",
+                id      = "autoLowTemp",
                 visible = enabled
             }
             SETTINGS_DLG:modify {
-                id = "autoHighTemp",
+                id      = "autoHighTemp",
                 visible = enabled
             }
             SETTINGS_DLG:modify {
-                id = "-1",
+                id      = "-1",
                 visible = enabled
             }
             SETTINGS_DLG:modify {
-                id = "0",
+                id      = "0",
                 visible = enabled
             }
             SETTINGS_DLG:modify {
-                id = "1",
+                id      = "1",
                 visible = enabled
             }
         end
@@ -89,7 +89,7 @@ function SettingsActions.setSlots(n)
     end
 end
 
----Updates debouncer delay for rebuild requests.
+---Updates delay for rebuild requests.
 function SettingsActions.setUpdateDelay()
     if not SETTINGS_DLG then return end
     local value = SETTINGS_DLG.data.updateDelay
@@ -117,7 +117,7 @@ function SettingsActions.setTempHue(id)
 
         if sat ~= 1 or light ~= 0.5 or alpha ~= 255 then
             SETTINGS_DLG:modify {
-                id = id,
+                id    = id,
                 color = getTemp(data.hue)
             }
             return
@@ -137,18 +137,18 @@ local function syncSetting(id)
 
     if isTemp or isAutoTemp then
         SETTINGS_DLG:modify {
-            id = id,
+            id    = id,
             color = getTemp(Settings.get(id))
         }
     elseif isSlots then
         local radioId = tostring(Settings.get("slots"))
         SETTINGS_DLG:modify {
-            id = radioId,
+            id       = radioId,
             selected = true
         }
     else
         SETTINGS_DLG:modify {
-            id = id,
+            id    = id,
             value = Settings.get(id)
         }
     end

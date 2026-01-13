@@ -1,4 +1,4 @@
-local Cache     = Import("src/state/Cache.lua")
+local Cache = Import("src/state/Cache.lua")
 
 ---@diagnostic disable: undefined-global
 
