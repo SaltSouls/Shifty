@@ -30,6 +30,7 @@ local Cache = Import("src/state/Cache.lua")
 ---@field snapshot fun():ShiftySettingsSnapshot
 local Settings  = {}
 
+local _GShifty = _G
 Settings.maxHue = 360
 
 Settings.data   = {
@@ -41,7 +42,6 @@ Settings.data   = {
         "sway",
         "saturation",
         "lightness",
-        "slots",
         "updateDelay"
     },
 
@@ -67,7 +67,12 @@ function Settings.getCache(id) return Cache.get(id) end
 function Settings.setCache(id, value) Cache.set(id, value) end
 
 function Settings.get(id) return Settings.data[id].value end
-function Settings.set(id, value) Settings.data[id].value = value end
+function Settings.set(id, value)
+    Settings.data[id].value = value
+    if _GShifty.SHIFTY_PREFS and Settings.data[id] ~= nil then
+        _GShifty.SHIFTY_PREFS[id] = value
+    end
+end
 function Settings.getDefault(id) return Settings.data[id].default end
 
 function Settings.getBaseColor()

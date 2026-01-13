@@ -131,20 +131,12 @@ end
 local function syncSetting(id)
     -- Keeps UI controls in sync when we programmatically change setting values.
     if not SETTINGS_DLG then return end
-    local isTemp     = (id == "lowTemp" or id == "highTemp")
-    local isAutoTemp = (id == "autoLowTemp" or id == "autoHighTemp")
-    local isSlots    = (id == "slots")
+    local isTemp = (id == "lowTemp" or id == "highTemp")
 
-    if isTemp or isAutoTemp then
+    if isTemp then
         SETTINGS_DLG:modify {
             id    = id,
             color = getTemp(Settings.get(id))
-        }
-    elseif isSlots then
-        local radioId = tostring(Settings.get("slots"))
-        SETTINGS_DLG:modify {
-            id       = radioId,
-            selected = true
         }
     else
         SETTINGS_DLG:modify {

@@ -95,6 +95,22 @@ _GShifty.SHIFTY_VERSION = loadVersion()
 ---Aseprite entry point.
 ---@param plugin Plugin
 function init(plugin)
+    -- Persist Settings across sessions.
+    _GShifty.SHIFTY_PREFS = plugin.preferences
+
+    -- Load validated plugin settings into app settings.
+    for id, entry in pairs(Settings.data) do
+        if type(entry) ~= "table" and entry.default == nil then goto continue end
+
+        local saved = plugin.preferences[id]
+        if saved ~= nil then Settings.set(id, saved) end
+        Settings.ensureValue(id)
+        ::continue::
+    end
+
+    -- Apply persisted scheduler delay immediately.
+    App.setSchedulerDelay(Settings.get("updateDelay"))
+
     plugin:newCommand {
         id      = "shifty",
         title   = "Shifty",
@@ -103,6 +119,11 @@ function init(plugin)
             if not app.isUIAvailable then return end
             Shifty.start()
             App.rebuild(Settings.getCache("fgColor"))
+        end,
+        onenabled=function()
+            if not app.sprite then return false end
+            if SHIFTY_DLG then return false end
+            return true
         end
     }
 end

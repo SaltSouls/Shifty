@@ -50,8 +50,8 @@ function ShiftyDialog.start()
         local function cleanup()
             app.events:off(fgListenerCode)
             app.events:off(bgListenerCode)
-            if not SETTINGS_DLG then return end
-            SETTINGS_DLG:close()
+            if SETTINGS_DLG then SETTINGS_DLG:close() end
+            SHIFTY_DLG = nil
         end
 
         dlg = Dialog {
