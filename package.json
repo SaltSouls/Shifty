@@ -1,0 +1,30 @@
+{
+    "name": "shifty",
+    "displayName": "Shifty",
+    "description": "Generates color-shifted palettes inspired by PyxelEdit.",
+    "version": "7.0.0",
+    "author": {
+        "name": "TwinSouls",
+        "email": "beyondtwinsouls@gmail.com"
+    },
+    "contributors": [
+        "David Capello",
+        "domjon",
+        "yashar98",
+        "Daeyangae",
+        "hoelzlmanuel",
+        "GerryLCDF"
+    ],
+    "publisher": "TwinSouls",
+    "license": "MIT",
+    "categories": [
+        "Scripts"
+    ],
+    "contributes": {
+        "scripts": [
+            {
+                "path": "./src/Shifty.lua"
+            }
+        ]
+    }
+}

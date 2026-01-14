@@ -15,7 +15,7 @@ Shifty is a small, community driven, palette generation script based on the Pyxe
 
 </div>
 
-The project was started by the user domjohn over on the Aseprite forums, where many people would continue contributing to it. Mine is just version 6.0 of this community project. It comes with several fixes, a cleaned up UI, and a bunch of additional features for you to play around with. I have also gone through the effort of cleaning up the code base in case anyone wants to help continue supporting the project. I will continue to update it as I see fit, adding/tweaking features if wanted/needed.
+The project was started by the user domjohn over on the Aseprite forums, where many people would continue contributing to it. Mine is just the latest version of this community project. It comes with several fixes, a cleaned up UI, and a bunch of additional features for you to play around with. I have also gone through the effort of cleaning up the code base in case anyone wants to help continue supporting the project. I will continue to update it as I see fit, adding/tweaking features if wanted/needed.
 
 <div align="center">
 
@@ -29,16 +29,18 @@ The project was started by the user domjohn over on the Aseprite forums, where m
 
 Intallation:
 
-1. Download the script file from the <a style="font-family: inherit;" href="https://github.com/SaltSouls/Shifty/releases">releases</a> page.
-2. Open Aseprite and go to: File -> Scripts -> Open Scripts Folder.
-3. Copy the script file into Aseprite’s scripts folder.
+1. Download `Shifty.aseprite-extension` from the <a style="font-family: inherit;" href="https://github.com/SaltSouls/Shifty/releases">releases</a> page.
+2. Install it using one of these methods:
+   - (Windows/macOS): Double-click the `Shifty.aseprite-extension` file.
+   - (Manual): In Aseprite: `Edit -> Preferences -> Extensions -> Add Extension...` and select `Shifty.aseprite-extension`.
+3. Restart Aseprite if prompted (or if the menu item doesn’t appear right away).
 
 - - - - -
 
 Usage:
 
-- In Aseprite, go to: File -> Scripts -> Shifty.
-- Doing so will open a new instance of the Shifty script.
+- In Aseprite, go to: `View -> Shifty`.
+- Doing so will open the Shifty dialog window.
 
 - - - - -
 
