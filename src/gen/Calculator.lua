@@ -81,9 +81,9 @@ end
 ---@return Color
 function Calculator.mix(color1, color2, mixProportion)
     return Color {
-        red = clamp(lerp(color1.red, color2.red, mixProportion), 0, 255),
+        red   = clamp(lerp(color1.red, color2.red, mixProportion), 0, 255),
         green = clamp(lerp(color1.green, color2.green, mixProportion), 0, 255),
-        blue = clamp(lerp(color1.blue, color2.blue, mixProportion), 0, 255)
+        blue  = clamp(lerp(color1.blue, color2.blue, mixProportion), 0, 255)
     }
 end
 

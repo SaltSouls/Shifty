@@ -69,8 +69,10 @@ function Settings.setCache(id, value) Cache.set(id, value) end
 function Settings.get(id) return Settings.data[id].value end
 function Settings.set(id, value)
     Settings.data[id].value = value
+    -- Save modified settings to plugin.preferences, except for autoTemp values.
     if _GShifty.SHIFTY_PREFS and Settings.data[id] ~= nil then
-        _GShifty.SHIFTY_PREFS[id] = value
+        local isAutoTemp = (id == "autoLowTemp" or id == "autoHighTemp")
+        if not isAutoTemp then _GShifty.SHIFTY_PREFS[id] = value end
     end
 end
 function Settings.getDefault(id) return Settings.data[id].default end

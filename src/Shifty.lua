@@ -42,7 +42,7 @@ _GShifty.ShiftyModules = _GShifty.ShiftyModules or {}
 -- Module Loader
 --------------------------------------------------------------------------------
 
----Loads and memoizes a Shifty module (relative to project root).
+---Loads and memorizes a Shifty module (relative to project root).
 ---
 ---Aseprite uses a single Lua state for scripts; caching prevents duplicate
 ---`dofile()` calls when modules are imported from different entry points.

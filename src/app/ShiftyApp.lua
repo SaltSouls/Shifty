@@ -26,7 +26,7 @@ local requestRebuild
 ---Builds a rebuild function that schedules tasks based on `updateDelay`.
 ---
 ---When delayed, previous tasks will be overwritten by current incoming tasks.
----When delay is > 0 we wrap rebuild in a scheduler that resets its timer on each
+---When delay is > 0, wrap rebuild in a scheduler that resets its timer on each
 ---call (slider drag friendly).
 ---@return fun(baseColor?: Color)
 local function rebuildRequestFn()

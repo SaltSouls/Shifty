@@ -47,7 +47,7 @@ function ColorUtils.createColor(baseColor, alphaOverride)
     return newColor
 end
 
----Compares HSL components (not RGB) for equality.
+---Tests if two colors share the same HSL values.
 ---@param color1 Color
 ---@param color2 Color
 ---@return boolean

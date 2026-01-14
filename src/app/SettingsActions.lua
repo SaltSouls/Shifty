@@ -129,7 +129,7 @@ function SettingsActions.setTempHue(id)
 end
 
 local function syncSetting(id)
-    -- Keeps UI controls in sync when we programmatically change setting values.
+    -- Keeps UI controls in sync when programmatically changing setting values.
     if not SETTINGS_DLG then return end
     local isTemp = (id == "lowTemp" or id == "highTemp")
 
